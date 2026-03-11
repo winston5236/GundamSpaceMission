@@ -3,229 +3,225 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Solar System Odyssey</title>
+    <title>Gundam OS: Solar Mapping</title>
     <style>
         :root {
-            --space-black: #05070a;
-            --star-white: #ffffff;
-            --accent-gold: #ffcc00;
-            --accent-blue: #4cc9f0;
-            --glass: rgba(255, 255, 255, 0.05);
+            --gundam-red: #ef233c;
+            --gundam-blue: #004e98;
+            --gundam-yellow: #ffb703;
+            --ui-white: #edf2f4;
+            --panel-bg: rgba(0, 20, 40, 0.85);
+            --border-glow: 0 0 10px rgba(76, 201, 240, 0.5);
         }
 
         body {
-            background-color: var(--space-black);
-            color: var(--star-white);
-            font-family: 'Courier New', Courier, monospace; /* Space/Terminal feel */
+            background-color: #010204;
+            background-image: 
+                radial-gradient(circle at 2px 2px, rgba(255,255,255,0.05) 1px, transparent 0);
+            background-size: 40px 40px;
+            color: var(--ui-white);
+            font-family: 'Segoe UI', 'Orbitron', sans-serif;
             margin: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
+            text-transform: uppercase;
         }
 
-        /* Progress Bar Container */
-        #progress-container {
-            width: 80%;
-            max-width: 600px;
-            height: 10px;
-            background: #222;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            overflow: hidden;
-            border: 1px solid #444;
-        }
-
-        #progress-bar {
-            width: 10%;
-            height: 100%;
-            background: var(--accent-blue);
-            transition: width 0.5s ease-in-out;
-            box-shadow: 0 0 10px var(--accent-blue);
+        /* Tactical Header */
+        #header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 15px;
+            border-bottom: 2px solid var(--gundam-red);
+            background: linear-gradient(90deg, var(--gundam-blue), transparent);
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
         }
 
         #game-container {
             width: 90%;
-            max-width: 600px;
-            padding: 2.5rem;
-            background: var(--glass);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 20px;
-            text-align: center;
+            max-width: 700px;
+            padding: 20px;
+            border: 2px solid var(--gundam-blue);
+            background: var(--panel-bg);
+            box-shadow: var(--border-glow);
+            position: relative;
         }
 
-        .stage { display: none; animation: slideIn 0.5s ease-out; }
+        /* Corner accents for Mecha feel */
+        #game-container::before {
+            content: "";
+            position: absolute;
+            top: -5px; left: -5px;
+            width: 20px; height: 20px;
+            border-top: 4px solid var(--gundam-yellow);
+            border-left: 4px solid var(--gundam-yellow);
+        }
+
+        .stage { display: none; }
         .stage.active { display: block; }
 
-        h2 { color: var(--accent-gold); text-transform: uppercase; letter-spacing: 4px; }
-        
-        .content {
-            margin: 25px 0;
-            text-align: left;
-            font-size: 1rem;
-            line-height: 1.8;
-            border-left: 2px solid var(--accent-gold);
-            padding-left: 20px;
-            color: #ccc;
+        /* Locked State UI */
+        .locked-notice {
+            color: var(--gundam-red);
+            border: 1px dashed var(--gundam-red);
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 20px;
+            background: rgba(239, 35, 60, 0.1);
         }
 
-        .input-group { margin-top: 30px; }
+        /* Unlocked Content UI */
+        .unlocked-data {
+            display: none; /* Hidden until success */
+            border: 1px solid var(--gundam-yellow);
+            padding: 20px;
+            background: rgba(255, 183, 3, 0.05);
+            line-height: 1.6;
+            margin-bottom: 20px;
+            animation: glitch 0.3s ease;
+        }
+
+        .input-bay {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
 
         input {
             background: #000;
-            border: 1px solid #444;
-            padding: 12px;
-            color: var(--accent-blue);
-            border-radius: 4px;
+            border: 1px solid var(--gundam-blue);
+            color: var(--gundam-yellow);
+            padding: 10px;
+            font-family: monospace;
             width: 50%;
-            text-align: center;
-            font-size: 1.1rem;
         }
 
-        button {
-            padding: 12px 25px;
-            background: transparent;
-            color: var(--accent-blue);
-            border: 1px solid var(--accent-blue);
-            border-radius: 4px;
+        .btn-action {
+            background: var(--gundam-blue);
+            color: white;
+            border: none;
+            padding: 10px 20px;
             cursor: pointer;
             font-weight: bold;
-            margin-left: 10px;
         }
 
-        button:hover {
-            background: var(--accent-blue);
+        .btn-action:hover { background: var(--gundam-red); }
+
+        .btn-next {
+            display: none; /* Hidden until stage unlocked */
+            width: 100%;
+            margin-top: 10px;
+            background: var(--gundam-yellow);
             color: black;
+            border: none;
+            padding: 15px;
+            font-weight: bolder;
+            cursor: pointer;
         }
 
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(20px); }
-            to { opacity: 1; transform: translateX(0); }
+        @keyframes glitch {
+            0% { transform: skew(5deg); opacity: 0; }
+            50% { transform: skew(-5deg); opacity: 0.5; }
+            100% { transform: skew(0); opacity: 1; }
         }
+
+        .phase-text { color: var(--gundam-yellow); font-size: 0.7rem; margin-bottom: 5px; }
     </style>
 </head>
 <body>
 
-    <div id="progress-container">
-        <div id="progress-bar"></div>
+    <div id="header">
+        <div>SYSTEM: HARO-OS v2.06</div>
+        <div>PILOT: NEWTYPE DETECTED</div>
+        <div id="status">STATUS: STANDBY</div>
     </div>
 
     <div id="game-container">
         
-        <div class="stage active" id="stage-1">
-            <h2>01. THE SUN</h2>
-            <div class="content">[CONTENT PENDING: Heat, scale, and the center of gravity.]</div>
-            <div class="input-group">
-                <input type="text" id="in-1" placeholder="SOLAR CODE">
-                <button onclick="check(1, 'HELIOS')">NEXT</button>
+        <div id="all-stages">
+            <div class="stage active" id="stage-1">
+                <div class="phase-text">PHASE 01: THE CENTRAL CORE</div>
+                <div class="locked-notice" id="lock-1">
+                    [ ACCESS RESTRICTED ]<br>
+                    SYNCHRONIZE WITH PHYSICAL MODEL TO RETRIEVE DECRYPTION KEY
+                </div>
+                
+                <div class="unlocked-data" id="data-1">
+                    <h2 style="color:var(--gundam-yellow)">SYSTEM: THE SUN</h2>
+                    <p>[YOUR CONTENT WILL GO HERE: e.g., Nuclear fusion details, mass vs planets, etc.]</p>
+                </div>
+
+                <div class="input-bay" id="bay-1">
+                    <input type="text" id="in-1" placeholder="ENTER CODE">
+                    <button class="btn-action" onclick="unlock(1, 'HELIOS')">DECRYPT</button>
+                </div>
+                <button class="btn-next" id="next-1" onclick="nextStage(1)">MOVE TO NEXT SECTOR</button>
             </div>
-        </div>
 
-        <div class="stage" id="stage-2">
-            <h2>02. MERCURY</h2>
-            <div class="content">[CONTENT PENDING: The swift planet, extremes in temperature.]</div>
-            <div class="input-group">
-                <input type="text" id="in-2" placeholder="MERCURY CODE">
-                <button onclick="check(2, 'SWIFT')">NEXT</button>
+            <div class="stage" id="stage-2">
+                <div class="phase-text">PHASE 02: INNER THERMAL ZONE</div>
+                <div class="locked-notice" id="lock-2">[ ACCESS RESTRICTED ]</div>
+                <div class="unlocked-data" id="data-2">
+                    <h2>SYSTEM: MERCURY</h2>
+                    <p>[YOUR CONTENT WILL GO HERE]</p>
+                </div>
+                <div class="input-bay" id="bay-2">
+                    <input type="text" id="in-2" placeholder="ENTER CODE">
+                    <button class="btn-action" onclick="unlock(2, 'SWIFT')">DECRYPT</button>
+                </div>
+                <button class="btn-next" id="next-2" onclick="nextStage(2)">MOVE TO NEXT SECTOR</button>
             </div>
-        </div>
 
-        <div class="stage" id="stage-3">
-            <h2>03. VENUS</h2>
-            <div class="content">[CONTENT PENDING: Atmospheric pressure and greenhouse effects.]</div>
-            <div class="input-group">
-                <input type="text" id="in-3" placeholder="VENUS CODE">
-                <button onclick="check(3, 'BRIGHT')">NEXT</button>
+            <div class="stage" id="stage-3">
+                <div class="phase-text">PHASE 03: CLOUD COVER SECTOR</div>
+                <div class="locked-notice" id="lock-3">[ ACCESS RESTRICTED ]</div>
+                <div class="unlocked-data" id="data-3"><h2>SYSTEM: VENUS</h2><p>[CONTENT]</p></div>
+                <div class="input-bay" id="bay-3"><input type="text" id="in-3"><button class="btn-action" onclick="unlock(3, 'BRIGHT')">DECRYPT</button></div>
+                <button class="btn-next" id="next-3" onclick="nextStage(3)">MOVE TO NEXT SECTOR</button>
             </div>
-        </div>
-
-        <div class="stage" id="stage-4">
-            <h2>04. EARTH</h2>
-            <div class="content">[CONTENT PENDING: The Goldilocks zone and liquid water.]</div>
-            <div class="input-group">
-                <input type="text" id="in-4" placeholder="EARTH CODE">
-                <button onclick="check(4, 'HOME')">NEXT</button>
+            
             </div>
-        </div>
-
-        <div class="stage" id="stage-5">
-            <h2>05. MARS</h2>
-            <div class="content">[CONTENT PENDING: The Red Planet and Olympus Mons.]</div>
-            <div class="input-group">
-                <input type="text" id="in-5" placeholder="MARS CODE">
-                <button onclick="check(5, 'ROVER')">NEXT</button>
-            </div>
-        </div>
-
-        <div class="stage" id="stage-6">
-            <h2>06. JUPITER</h2>
-            <div class="content">[CONTENT PENDING: The King of Planets and the Great Red Spot.]</div>
-            <div class="input-group">
-                <input type="text" id="in-6" placeholder="JUPITER CODE">
-                <button onclick="check(6, 'GIANT')">NEXT</button>
-            </div>
-        </div>
-
-        <div class="stage" id="stage-7">
-            <h2>07. SATURN</h2>
-            <div class="content">[CONTENT PENDING: The Ring system and Titan.]</div>
-            <div class="input-group">
-                <input type="text" id="in-7" placeholder="SATURN CODE">
-                <button onclick="check(7, 'HALO')">NEXT</button>
-            </div>
-        </div>
-
-        <div class="stage" id="stage-8">
-            <h2>08. URANUS</h2>
-            <div class="content">[CONTENT PENDING: The Ice Giant and its tilted axis.]</div>
-            <div class="input-group">
-                <input type="text" id="in-8" placeholder="URANUS CODE">
-                <button onclick="check(8, 'TILT')">NEXT</button>
-            </div>
-        </div>
-
-        <div class="stage" id="stage-9">
-            <h2>09. NEPTUNE</h2>
-            <div class="content">[CONTENT PENDING: Supersonic winds and the deep blue.]</div>
-            <div class="input-group">
-                <input type="text" id="in-9" placeholder="NEPTUNE CODE">
-                <button onclick="check(9, 'STORM')">NEXT</button>
-            </div>
-        </div>
-
-        <div class="stage" id="stage-10">
-            <h2>10. MISSION DEBRIEF</h2>
-            <div class="content">[CONTENT PENDING: Summary of the voyage and final thoughts.]</div>
-            <div class="input-group">
-                <p>Enter the Final Master Code:</p>
-                <input type="text" id="in-10" placeholder="FINAL CODE">
-                <button onclick="check(10, 'VOYAGER')">FINISH</button>
-            </div>
-        </div>
-
-        <div class="stage" id="stage-11">
-            <h2>SUCCESS</h2>
-            <div class="content">The Solar System has been mapped. Your mission is complete.</div>
-            <button onclick="location.reload()">RE-INITIALIZE</button>
-        </div>
-
     </div>
 
     <script>
-        function check(current, code) {
-            const inputVal = document.getElementById(`in-${current}`).value.toUpperCase().trim();
-            if (inputVal === code) {
-                // Update Progress Bar
-                const percent = (current / 10) * 100;
-                document.getElementById('progress-bar').style.width = (percent + 10) + "%";
-
-                // Switch Stages
-                document.getElementById(`stage-${current}`).classList.remove('active');
-                document.getElementById(`stage-${current + 1}`).classList.add('active');
+        function unlock(stageNum, correctCode) {
+            const input = document.getElementById(`in-${stageNum}`).value.toUpperCase().trim();
+            const status = document.getElementById('status');
+            
+            if (input === correctCode) {
+                // Change UI state
+                document.getElementById(`lock-${stageNum}`).style.display = 'none';
+                document.getElementById(`bay-${stageNum}`).style.display = 'none';
+                
+                // Show Content
+                document.getElementById(`data-${stageNum}`).style.display = 'block';
+                document.getElementById(`next-${stageNum}`).style.display = 'block';
+                
+                status.innerText = "STATUS: DATA DECRYPTED";
+                status.style.color = "var(--gundam-yellow)";
             } else {
-                alert("ACCESS DENIED: Physical model verification failed.");
+                status.innerText = "STATUS: ERROR - INVALID KEY";
+                status.style.color = "var(--gundam-red)";
+                setTimeout(() => { status.innerText = "STATUS: STANDBY"; status.style.color = "white"; }, 2000);
+            }
+        }
+
+        function nextStage(current) {
+            document.getElementById(`stage-${current}`).classList.remove('active');
+            const next = current + 1;
+            const nextEl = document.getElementById(`stage-${next}`);
+            if (nextEl) {
+                nextEl.classList.add('active');
+                document.getElementById('status').innerText = "STATUS: STANDBY";
+            } else {
+                alert("MISSION COMPLETE: ALL SECTORS MAPPED");
             }
         }
     </script>
