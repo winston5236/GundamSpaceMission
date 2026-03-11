@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solar System Odyssey</title>
+    <style>
+        :root {
+            --space-black: #05070a;
+            --star-white: #ffffff;
+            --accent-gold: #ffcc00;
+            --accent-blue: #4cc9f0;
+            --glass: rgba(255, 255, 255, 0.05);
+        }
+
+        body {
+            background-color: var(--space-black);
+            color: var(--star-white);
+            font-family: 'Courier New', Courier, monospace; /* Space/Terminal feel */
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        /* Progress Bar Container */
+        #progress-container {
+            width: 80%;
+            max-width: 600px;
+            height: 10px;
+            background: #222;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            border: 1px solid #444;
+        }
+
+        #progress-bar {
+            width: 10%;
+            height: 100%;
+            background: var(--accent-blue);
+            transition: width 0.5s ease-in-out;
+            box-shadow: 0 0 10px var(--accent-blue);
+        }
+
+        #game-container {
+            width: 90%;
+            max-width: 600px;
+            padding: 2.5rem;
+            background: var(--glass);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 20px;
+            text-align: center;
+        }
+
+        .stage { display: none; animation: slideIn 0.5s ease-out; }
+        .stage.active { display: block; }
+
+        h2 { color: var(--accent-gold); text-transform: uppercase; letter-spacing: 4px; }
+        
+        .content {
+            margin: 25px 0;
+            text-align: left;
+            font-size: 1rem;
+            line-height: 1.8;
+            border-left: 2px solid var(--accent-gold);
+            padding-left: 20px;
+            color: #ccc;
+        }
+
+        .input-group { margin-top: 30px; }
+
+        input {
+            background: #000;
+            border: 1px solid #444;
+            padding: 12px;
+            color: var(--accent-blue);
+            border-radius: 4px;
+            width: 50%;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        button {
+            padding: 12px 25px;
+            background: transparent;
+            color: var(--accent-blue);
+            border: 1px solid var(--accent-blue);
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        button:hover {
+            background: var(--accent-blue);
+            color: black;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="progress-container">
+        <div id="progress-bar"></div>
+    </div>
+
+    <div id="game-container">
+        
+        <div class="stage active" id="stage-1">
+            <h2>01. THE SUN</h2>
+            <div class="content">[CONTENT PENDING: Heat, scale, and the center of gravity.]</div>
+            <div class="input-group">
+                <input type="text" id="in-1" placeholder="SOLAR CODE">
+                <button onclick="check(1, 'HELIOS')">NEXT</button>
+            </div>
+        </div>
+
+        <div class="stage" id="stage-2">
+            <h2>02. MERCURY</h2>
+            <div class="content">[CONTENT PENDING: The swift planet, extremes in temperature.]</div>
+            <div class="input-group">
+                <input type="text" id="in-2" placeholder="MERCURY CODE">
+                <button onclick="check(2, 'SWIFT')">NEXT</button>
+            </div>
+        </div>
+
+        <div class="stage" id="stage-3">
+            <h2>03. VENUS</h2>
+            <div class="content">[CONTENT PENDING: Atmospheric pressure and greenhouse effects.]</div>
+            <div class="input-group">
+                <input type="text" id="in-3" placeholder="VENUS CODE">
+                <button onclick="check(3, 'BRIGHT')">NEXT</button>
+            </div>
+        </div>
+
+        <div class="stage" id="stage-4">
+            <h2>04. EARTH</h2>
+            <div class="content">[CONTENT PENDING: The Goldilocks zone and liquid water.]</div>
+            <div class="input-group">
+                <input type="text" id="in-4" placeholder="EARTH CODE">
+                <button onclick="check(4, 'HOME')">NEXT</button>
+            </div>
+        </div>
+
+        <div class="stage" id="stage-5">
+            <h2>05. MARS</h2>
+            <div class="content">[CONTENT PENDING: The Red Planet and Olympus Mons.]</div>
+            <div class="input-group">
+                <input type="text" id="in-5" placeholder="MARS CODE">
+                <button onclick="check(5, 'ROVER')">NEXT</button>
+            </div>
+        </div>
+
+        <div class="stage" id="stage-6">
+            <h2>06. JUPITER</h2>
+            <div class="content">[CONTENT PENDING: The King of Planets and the Great Red Spot.]</div>
+            <div class="input-group">
+                <input type="text" id="in-6" placeholder="JUPITER CODE">
+                <button onclick="check(6, 'GIANT')">NEXT</button>
+            </div>
+        </div>
+
+        <div class="stage" id="stage-7">
+            <h2>07. SATURN</h2>
+            <div class="content">[CONTENT PENDING: The Ring system and Titan.]</div>
+            <div class="input-group">
+                <input type="text" id="in-7" placeholder="SATURN CODE">
+                <button onclick="check(7, 'HALO')">NEXT</button>
+            </div>
+        </div>
+
+        <div class="stage" id="stage-8">
+            <h2>08. URANUS</h2>
+            <div class="content">[CONTENT PENDING: The Ice Giant and its tilted axis.]</div>
+            <div class="input-group">
+                <input type="text" id="in-8" placeholder="URANUS CODE">
+                <button onclick="check(8, 'TILT')">NEXT</button>
+            </div>
+        </div>
+
+        <div class="stage" id="stage-9">
+            <h2>09. NEPTUNE</h2>
+            <div class="content">[CONTENT PENDING: Supersonic winds and the deep blue.]</div>
+            <div class="input-group">
+                <input type="text" id="in-9" placeholder="NEPTUNE CODE">
+                <button onclick="check(9, 'STORM')">NEXT</button>
+            </div>
+        </div>
+
+        <div class="stage" id="stage-10">
+            <h2>10. MISSION DEBRIEF</h2>
+            <div class="content">[CONTENT PENDING: Summary of the voyage and final thoughts.]</div>
+            <div class="input-group">
+                <p>Enter the Final Master Code:</p>
+                <input type="text" id="in-10" placeholder="FINAL CODE">
+                <button onclick="check(10, 'VOYAGER')">FINISH</button>
+            </div>
+        </div>
+
+        <div class="stage" id="stage-11">
+            <h2>SUCCESS</h2>
+            <div class="content">The Solar System has been mapped. Your mission is complete.</div>
+            <button onclick="location.reload()">RE-INITIALIZE</button>
+        </div>
+
+    </div>
+
+    <script>
+        function check(current, code) {
+            const inputVal = document.getElementById(`in-${current}`).value.toUpperCase().trim();
+            if (inputVal === code) {
+                // Update Progress Bar
+                const percent = (current / 10) * 100;
+                document.getElementById('progress-bar').style.width = (percent + 10) + "%";
+
+                // Switch Stages
+                document.getElementById(`stage-${current}`).classList.remove('active');
+                document.getElementById(`stage-${current + 1}`).classList.add('active');
+            } else {
+                alert("ACCESS DENIED: Physical model verification failed.");
+            }
+        }
+    </script>
+</body>
+</html>
