@@ -3,215 +3,214 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MS-HUD // SOLAR NAVIGATOR</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>ZAFT MS-OS // SOLAR MISSION</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --gundam-red: #ff3e3e;
-            --gundam-blue: #0066ff;
-            --gundam-yellow: #ffc107;
-            --bg-dark: #06090f;
-            --panel-bg: rgba(10, 15, 25, 0.85);
-            --text-main: #e0e6ed;
-            --accent-cyan: #00f2ff;
+            --zaft-red: #ff2a2a;
+            --zaft-blue: #00a2ff;
+            --zaft-green: #39ff14;
+            --zaft-yellow: #f4d03f;
+            --cockpit-grey: #1a1c20;
+            --monitor-bg: #05080a;
         }
 
         body, html {
-            margin: 0;
-            padding: 0;
-            background-color: var(--bg-dark);
-            color: var(--text-main);
+            margin: 0; padding: 0; height: 100vh;
+            background-color: #000;
+            color: #fff;
             font-family: 'Inter', sans-serif;
-            height: 100vh;
-            overflow: hidden; /* Keeps it feeling like a fixed screen */
+            overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
-            text-transform: uppercase;
         }
 
-        /* --- COCKPIT PERIPHERALS --- */
-        .hud-overlay {
+        /* --- THE COCKPIT FRAME --- */
+        .cockpit-frame {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none; /* Let clicks pass through to the game */
-            border: 20px solid transparent;
+            background: 
+                /* Top Console */
+                linear-gradient(180deg, var(--cockpit-grey) 0%, transparent 20%),
+                /* Bottom Dashboard */
+                linear-gradient(0deg, #101215 0%, transparent 30%);
+            border: 25px solid #1a1c20;
             box-sizing: border-box;
-            z-index: 10;
+            pointer-events: none;
+            z-index: 5;
+            box-shadow: inset 0 0 100px rgba(0,0,0,1);
         }
 
-        /* Side Power Scales */
-        .side-bar {
+        /* Tactical Side Panels (The Buttons in your image) */
+        .side-panel {
             position: absolute;
-            width: 4px;
-            height: 40%;
-            background: rgba(0, 102, 255, 0.2);
-            top: 30%;
+            bottom: 50px;
+            width: 180px;
+            height: 250px;
+            background: #25282e;
+            border: 2px solid #3d424b;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            padding: 15px;
+            pointer-events: auto;
         }
-        .left-bar { left: 40px; border-left: 2px solid var(--gundam-blue); }
-        .right-bar { right: 40px; border-right: 2px solid var(--gundam-red); }
+        .left-panel { left: 40px; transform: perspective(500px) rotateY(20deg); }
+        .right-panel { right: 40px; transform: perspective(500px) rotateY(-20deg); }
 
-        /* Radar Circle */
-        .radar {
-            position: absolute;
-            bottom: 40px;
-            left: 40px;
-            width: 120px;
-            height: 120px;
-            border: 1px solid var(--gundam-blue);
-            border-radius: 50%;
-            background: radial-gradient(circle, rgba(0,102,255,0.1) 0%, transparent 70%);
+        .console-btn {
+            height: 25px;
+            background: #444;
+            border-bottom: 3px solid #222;
         }
-        .radar::after {
-            content: "";
-            position: absolute;
-            top: 50%; left: 50%;
-            width: 100%; height: 2px;
-            background: rgba(0, 242, 255, 0.3);
-            animation: radar-sweep 4s linear infinite;
-            transform-origin: left;
-        }
+        .btn-r { background: var(--zaft-red); box-shadow: 0 0 5px var(--zaft-red); }
+        .btn-b { background: var(--zaft-blue); box-shadow: 0 0 5px var(--zaft-blue); }
+        .btn-y { background: var(--zaft-yellow); box-shadow: 0 0 5px var(--zaft-yellow); }
 
-        /* Scanline Effect */
-        .scanline {
-            width: 100%;
-            height: 100px;
-            background: linear-gradient(0deg, transparent, rgba(0, 102, 255, 0.05), transparent);
-            position: absolute;
-            top: -100px;
-            animation: scan 8s linear infinite;
-        }
-
-        /* --- MAIN VIEWPORT --- */
-        #game-viewport {
-            width: 90%;
-            max-width: 600px;
-            background: var(--panel-bg);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(0, 102, 255, 0.3);
-            padding: 30px;
+        /* --- MAIN MONITOR (THE GAME) --- */
+        #main-monitor {
+            width: 60%;
+            height: 70%;
+            background: var(--monitor-bg);
+            border: 4px solid #3d424b;
             position: relative;
-            z-index: 20;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+            z-index: 10;
+            padding: 40px;
+            box-sizing: border-box;
+            box-shadow: 0 0 30px rgba(0, 162, 255, 0.2);
+            overflow-y: auto;
+        }
+
+        .os-header {
+            font-family: 'Orbitron';
+            color: var(--zaft-blue);
+            font-size: 0.8rem;
+            border-bottom: 1px solid var(--zaft-blue);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
         }
 
         .stage { display: none; }
-        .stage.active { display: block; animation: fadeIn 0.5s ease; }
+        .stage.active { display: block; animation: monitorOn 0.3s ease-out; }
 
-        h2 { font-family: 'Orbitron'; color: var(--gundam-yellow); margin-top: 0; letter-spacing: 2px; }
-        
-        .lock-screen {
-            padding: 40px 20px;
+        h2 { font-family: 'Orbitron'; font-size: 1.5rem; letter-spacing: 3px; color: #fff; }
+
+        .lock-container {
+            border: 1px solid var(--zaft-red);
+            background: rgba(255, 42, 42, 0.1);
+            padding: 30px;
             text-align: center;
-            border: 1px dashed var(--gundam-red);
-            background: rgba(255, 62, 62, 0.05);
-            margin-bottom: 20px;
+            margin: 20px 0;
         }
 
-        .data-content {
+        .data-reveal {
             display: none;
-            background: rgba(255,255,255,0.03);
+            line-height: 1.8;
             padding: 20px;
-            border-left: 4px solid var(--gundam-blue);
-            margin-bottom: 20px;
-            line-height: 1.6;
-            text-transform: none; /* Better readability for long text */
+            background: rgba(255, 255, 255, 0.05);
+            border-left: 5px solid var(--zaft-green);
         }
 
         input {
             width: 100%;
+            padding: 15px;
             background: #000;
-            border: 1px solid var(--gundam-blue);
-            color: var(--accent-cyan);
-            padding: 12px;
+            border: 1px solid var(--zaft-blue);
+            color: var(--zaft-green);
             font-family: 'Orbitron';
+            font-size: 1.2rem;
             text-align: center;
-            margin-bottom: 10px;
-            box-sizing: border-box;
+            margin: 20px 0;
+            outline: none;
         }
 
-        .btn {
+        .action-btn {
             width: 100%;
             padding: 15px;
             font-family: 'Orbitron';
-            font-weight: bold;
-            cursor: pointer;
+            background: var(--zaft-blue);
+            color: white;
             border: none;
-            transition: 0.2s;
+            cursor: pointer;
+            font-weight: bold;
         }
-        .btn-decrypt { background: var(--gundam-blue); color: white; }
-        .btn-next { background: var(--gundam-yellow); color: black; display: none; }
 
-        /* --- ANIMATIONS --- */
-        @keyframes radar-sweep { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        @keyframes scan { from { top: -100px; } to { top: 100%; } }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .action-btn:hover { background: var(--zaft-red); }
+
+        .next-btn {
+            display: none;
+            background: var(--zaft-green);
+            color: black;
+            margin-top: 15px;
+        }
+
+        @keyframes monitorOn {
+            0% { transform: scaleY(0.005) scaleX(0); opacity: 0; }
+            50% { transform: scaleY(0.005) scaleX(1); opacity: 1; }
+            100% { transform: scaleY(1) scaleX(1); }
+        }
 
     </style>
 </head>
 <body>
 
-    <div class="scanline"></div>
-    <div class="hud-overlay">
-        <div class="side-bar left-bar"></div>
-        <div class="side-bar right-bar"></div>
-        <div class="radar"></div>
-        <div style="position:absolute; bottom:40px; right:40px; font-family:'Orbitron'; font-size:10px; color:var(--gundam-red)">
-            WARNING: MINOVSKY DENSITY HIGH
-        </div>
+    <div class="cockpit-frame"></div>
+
+    <div class="side-panel left-panel">
+        <div class="console-btn btn-r"></div><div class="console-btn"></div><div class="console-btn"></div>
+        <div class="console-btn btn-b"></div><div class="console-btn btn-b"></div><div class="console-btn"></div>
+        <div class="console-btn"></div><div class="console-btn btn-y"></div><div class="console-btn"></div>
+        <div class="console-btn"></div><div class="console-btn"></div><div class="console-btn btn-r"></div>
     </div>
 
-    <main id="game-viewport">
+    <main id="main-monitor">
+        <div class="os-header">
+            <span>MOBILE SUIT NEO OPERATION SYSTEM</span>
+            <span>Ver. Z.A.F.T.</span>
+        </div>
+
         <div class="stage active" id="stg-1">
-            <h2>PHASE 01: THE SUN</h2>
-            <div class="lock-screen" id="lock-1">ACCESS RESTRICTED: PROVIDE CORE AUTH</div>
-            <div class="data-content" id="data-1">
-                [ SUN CONTENT: The heart of the system. A G-type main-sequence star. ]
+            <h2>PHASE 01 // THE SUN</h2>
+            <div class="lock-container" id="lock-1">
+                AUTHENTICATION REQUIRED<br>
+                [ SIGNAL JAMMED ]
+            </div>
+            <div class="data-reveal" id="data-1">
+                <p>The Sun is the center of our solar system. It is a nearly perfect sphere of hot plasma, heated to incandescence by nuclear fusion reactions in its core.</p>
             </div>
             <div id="ui-1">
-                <input type="text" id="in-1" placeholder="ENTER CODE">
-                <button class="btn btn-decrypt" onclick="unlock(1, 'SOL-01')">DECRYPT</button>
+                <input type="text" id="in-1" placeholder="KEY CODE" autocomplete="off">
+                <button class="action-btn" onclick="decrypt(1, 'SOL-01')">EXECUTE DECRYPTION</button>
             </div>
-            <button class="btn btn-next" id="next-1" onclick="next(1)">NAVIGATE TO NEXT SECTOR</button>
+            <button class="action-btn next-btn" id="next-1" onclick="next(1)">NAVIGATE TO NEXT SECTOR</button>
         </div>
 
         <div class="stage" id="stg-2">
-            <h2>PHASE 02: MERCURY</h2>
-            <div class="lock-screen" id="lock-2">ACCESS RESTRICTED</div>
-            <div class="data-content" id="data-2">[ MERCURY CONTENT ]</div>
+            <h2>PHASE 02 // MERCURY</h2>
+            <div class="lock-container" id="lock-2">AUTHENTICATION REQUIRED</div>
+            <div class="data-reveal" id="data-2">
+                <p>Mercury is the smallest planet and the closest to the Sun. Its surface is scarred by craters, much like our Moon.</p>
+            </div>
             <div id="ui-2">
-                <input type="text" id="in-2" placeholder="ENTER CODE">
-                <button class="btn btn-decrypt" onclick="unlock(2, 'FAST-2')">DECRYPT</button>
+                <input type="text" id="in-2" placeholder="KEY CODE">
+                <button class="action-btn" onclick="decrypt(2, 'FAST-2')">EXECUTE DECRYPTION</button>
             </div>
-            <button class="btn btn-next" id="next-2" onclick="next(2)">NAVIGATE TO NEXT SECTOR</button>
+            <button class="action-btn next-btn" id="next-2" onclick="next(2)">NAVIGATE TO NEXT SECTOR</button>
         </div>
+        
+        </main>
 
-        <div class="stage" id="stg-3">
-            <h2>PHASE 03: VENUS</h2>
-            <div class="lock-screen" id="lock-3">ACCESS RESTRICTED</div>
-            <div class="data-content" id="data-3">[ VENUS CONTENT ]</div>
-            <div id="ui-3">
-                <input type="text" id="in-3" placeholder="ENTER CODE">
-                <button class="btn btn-decrypt" onclick="unlock(3, 'ACID-3')">DECRYPT</button>
-            </div>
-            <button class="btn btn-next" id="next-3" onclick="next(3)">NAVIGATE TO NEXT SECTOR</button>
-        </div>
-
-        <div class="stage" id="stg-10">
-            <h2>PHASE 10: VOYAGER</h2>
-            <div class="lock-screen" id="lock-10">FINAL LOCK ACTIVE</div>
-            <div class="data-content" id="data-10">[ DEEP SPACE CONTENT ]</div>
-            <div id="ui-10">
-                <input type="text" id="in-10" placeholder="MASTER CODE">
-                <button class="btn btn-decrypt" onclick="unlock(10, 'AMURO')">FINALIZE</button>
-            </div>
-            <button class="btn btn-next" id="next-10" onclick="alert('MISSION SUCCESS: ALL DATA SECURED')">END MISSION</button>
-        </div>
-
-    </main>
+    <div class="side-panel right-panel">
+        <div class="console-btn btn-b"></div><div class="console-btn"></div><div class="console-btn btn-r"></div>
+        <div class="console-btn"></div><div class="console-btn btn-y"></div><div class="console-btn"></div>
+        <div class="console-btn btn-y"></div><div class="console-btn"></div><div class="console-btn btn-b"></div>
+        <div class="console-btn"></div><div class="console-btn btn-r"></div><div class="console-btn"></div>
+    </div>
 
     <script>
-        function unlock(n, code) {
+        function decrypt(n, code) {
             const val = document.getElementById(`in-${n}`).value.toUpperCase().trim();
             if (val === code) {
                 document.getElementById(`lock-${n}`).style.display = 'none';
@@ -219,13 +218,18 @@
                 document.getElementById(`data-${n}`).style.display = 'block';
                 document.getElementById(`next-${n}`).style.display = 'block';
             } else {
-                alert("CODE REJECTED");
+                alert("SYSTEM ERROR: CODE REJECTED");
             }
         }
 
         function next(n) {
             document.getElementById(`stg-${n}`).classList.remove('active');
-            document.getElementById(`stg-${n+1}`).classList.add('active');
+            const nextStg = document.getElementById(`stg-${n+1}`);
+            if (nextStg) {
+                nextStg.classList.add('active');
+            } else {
+                alert("MISSION SUCCESS. ALL SECTORS MAPPED.");
+            }
         }
     </script>
 </body>
