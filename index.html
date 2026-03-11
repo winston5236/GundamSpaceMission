@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZAFT MS-OS // SOLAR MISSION</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <title>ZAFT MS-OS // MISSION: SOL</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --zaft-red: #ff2a2a;
-            --zaft-blue: #00a2ff;
+            --zaft-blue: #32a8ff;
             --zaft-green: #39ff14;
             --zaft-yellow: #f4d03f;
-            --cockpit-grey: #1a1c20;
             --monitor-bg: #05080a;
+            --panel-border: #3d424b;
         }
 
         body, html {
@@ -21,135 +21,132 @@
             color: #fff;
             font-family: 'Inter', sans-serif;
             overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            display: flex; justify-content: center; align-items: center;
         }
 
-        /* --- THE COCKPIT FRAME --- */
+        /* --- COCKPIT BACKGROUND --- */
         .cockpit-frame {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: 
-                /* Top Console */
-                linear-gradient(180deg, var(--cockpit-grey) 0%, transparent 20%),
-                /* Bottom Dashboard */
-                linear-gradient(0deg, #101215 0%, transparent 30%);
-            border: 25px solid #1a1c20;
+            background: linear-gradient(180deg, #1a1c20 0%, transparent 20%),
+                        linear-gradient(0deg, #101215 0%, transparent 30%);
+            border: 20px solid #1a1c20;
             box-sizing: border-box;
             pointer-events: none;
             z-index: 5;
-            box-shadow: inset 0 0 100px rgba(0,0,0,1);
         }
 
-        /* Tactical Side Panels (The Buttons in your image) */
-        .side-panel {
-            position: absolute;
-            bottom: 50px;
-            width: 180px;
-            height: 250px;
-            background: #25282e;
-            border: 2px solid #3d424b;
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            padding: 15px;
-            pointer-events: auto;
-        }
-        .left-panel { left: 40px; transform: perspective(500px) rotateY(20deg); }
-        .right-panel { right: 40px; transform: perspective(500px) rotateY(-20deg); }
-
-        .console-btn {
-            height: 25px;
-            background: #444;
-            border-bottom: 3px solid #222;
-        }
-        .btn-r { background: var(--zaft-red); box-shadow: 0 0 5px var(--zaft-red); }
-        .btn-b { background: var(--zaft-blue); box-shadow: 0 0 5px var(--zaft-blue); }
-        .btn-y { background: var(--zaft-yellow); box-shadow: 0 0 5px var(--zaft-yellow); }
-
-        /* --- MAIN MONITOR (THE GAME) --- */
+        /* --- MAIN MONITOR --- */
         #main-monitor {
-            width: 60%;
-            height: 70%;
+            width: 90%;
+            max-width: 500px;
+            height: 80vh;
             background: var(--monitor-bg);
-            border: 4px solid #3d424b;
+            border: 2px solid var(--panel-border);
             position: relative;
             z-index: 10;
-            padding: 40px;
+            padding: 25px;
             box-sizing: border-box;
-            box-shadow: 0 0 30px rgba(0, 162, 255, 0.2);
-            overflow-y: auto;
+            box-shadow: 0 0 40px rgba(0, 162, 255, 0.15);
+            display: flex;
+            flex-direction: column;
         }
 
         .os-header {
             font-family: 'Orbitron';
             color: var(--zaft-blue);
-            font-size: 0.8rem;
-            border-bottom: 1px solid var(--zaft-blue);
-            margin-bottom: 30px;
-            display: flex;
-            justify-content: space-between;
+            font-size: 0.7rem;
+            border-bottom: 2px solid var(--zaft-blue);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            display: flex; justify-content: space-between;
         }
 
-        .stage { display: none; }
-        .stage.active { display: block; animation: monitorOn 0.3s ease-out; }
+        .stage { display: none; height: 100%; flex-direction: column; }
+        .stage.active { display: flex; }
 
-        h2 { font-family: 'Orbitron'; font-size: 1.5rem; letter-spacing: 3px; color: #fff; }
+        h2 { font-family: 'Orbitron'; font-size: 1.4rem; letter-spacing: 2px; margin: 0 0 20px 0; color: #fff; }
 
-        .lock-container {
-            border: 1px solid var(--zaft-red);
-            background: rgba(255, 42, 42, 0.1);
-            padding: 30px;
+        /* ERROR WINDOW STYLE */
+        .status-window {
+            border: 2px solid var(--zaft-red);
+            background: rgba(255, 42, 42, 0.08);
+            padding: 20px;
             text-align: center;
-            margin: 20px 0;
+            margin-bottom: 20px;
+            position: relative;
         }
 
+        .status-window::before {
+            content: "SYSTEM ALERT";
+            position: absolute;
+            top: -12px; left: 10px;
+            background: var(--zaft-red);
+            color: #000;
+            font-size: 0.6rem;
+            font-weight: bold;
+            padding: 2px 8px;
+            font-family: 'Orbitron';
+        }
+
+        .alert-text { font-family: 'Orbitron'; color: var(--zaft-red); font-size: 0.9rem; line-height: 1.4; }
+
+        /* DATA REVEAL STYLE */
         .data-reveal {
             display: none;
-            line-height: 1.8;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.05);
-            border-left: 5px solid var(--zaft-green);
+            flex-grow: 1;
+            padding: 15px;
+            background: rgba(57, 255, 20, 0.05);
+            border: 1px solid var(--zaft-green);
+            color: #ccc;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            overflow-y: auto;
+        }
+
+        .data-label { color: var(--zaft-green); font-family: 'Orbitron'; font-size: 0.7rem; margin-bottom: 10px; display: block; }
+
+        /* INPUT / ACTION SECTION */
+        .input-bay { margin-top: auto; }
+
+        .key-input-container {
+            border: 1px solid var(--zaft-blue);
+            padding: 5px;
+            margin-bottom: 10px;
+            background: rgba(50, 168, 255, 0.05);
         }
 
         input {
             width: 100%;
-            padding: 15px;
-            background: #000;
-            border: 1px solid var(--zaft-blue);
-            color: var(--zaft-green);
+            background: transparent;
+            border: none;
+            color: var(--zaft-yellow);
             font-family: 'Orbitron';
-            font-size: 1.2rem;
+            font-size: 1.5rem;
             text-align: center;
-            margin: 20px 0;
             outline: none;
+            padding: 10px 0;
         }
 
         .action-btn {
             width: 100%;
             padding: 15px;
             font-family: 'Orbitron';
-            background: var(--zaft-blue);
-            color: white;
+            font-weight: bold;
             border: none;
             cursor: pointer;
-            font-weight: bold;
+            text-transform: uppercase;
+            transition: 0.2s;
         }
 
-        .action-btn:hover { background: var(--zaft-red); }
+        .decrypt-btn { background: var(--zaft-blue); color: white; }
+        .decrypt-btn:hover { background: #50b8ff; }
 
-        .next-btn {
-            display: none;
-            background: var(--zaft-green);
-            color: black;
-            margin-top: 15px;
-        }
-
-        @keyframes monitorOn {
-            0% { transform: scaleY(0.005) scaleX(0); opacity: 0; }
-            50% { transform: scaleY(0.005) scaleX(1); opacity: 1; }
-            100% { transform: scaleY(1) scaleX(1); }
+        .next-btn { 
+            display: none; 
+            background: var(--zaft-green); 
+            color: #000; 
+            box-shadow: 0 0 15px var(--zaft-green);
         }
 
     </style>
@@ -158,78 +155,156 @@
 
     <div class="cockpit-frame"></div>
 
-    <div class="side-panel left-panel">
-        <div class="console-btn btn-r"></div><div class="console-btn"></div><div class="console-btn"></div>
-        <div class="console-btn btn-b"></div><div class="console-btn btn-b"></div><div class="console-btn"></div>
-        <div class="console-btn"></div><div class="console-btn btn-y"></div><div class="console-btn"></div>
-        <div class="console-btn"></div><div class="console-btn"></div><div class="console-btn btn-r"></div>
-    </div>
-
     <main id="main-monitor">
         <div class="os-header">
             <span>MOBILE SUIT NEO OPERATION SYSTEM</span>
             <span>Ver. Z.A.F.T.</span>
         </div>
 
-        <div class="stage active" id="stg-1">
-            <h2>PHASE 01 // THE SUN</h2>
-            <div class="lock-container" id="lock-1">
-                AUTHENTICATION REQUIRED<br>
-                [ SIGNAL JAMMED ]
+        <div id="stages-container">
+            <div class="stage active" id="stg-1">
+                <h2>PHASE 01 // THE SUN</h2>
+                <div class="status-window" id="lock-1">
+                    <div class="alert-text">AUTHENTICATION REQUIRED<br>[ SIGNAL JAMMED ]</div>
+                </div>
+                <div class="data-reveal" id="data-1">
+                    <span class="data-label">DECIPHERED CONTENT:</span>
+                    <p>[ INSERT SUN CONTENT HERE: Temperature, Fusion, Gravity ]</p>
+                </div>
+                <div class="input-bay" id="ui-1">
+                    <div class="key-input-container">
+                        <input type="text" id="in-1" placeholder="KEY CODE" autocomplete="off">
+                    </div>
+                    <button class="action-btn decrypt-btn" onclick="checkCode(1, 'HELIOS')">EXECUTE DECRYPTION</button>
+                </div>
+                <button class="action-btn next-btn" id="next-1" onclick="goToNext(1)">NAVIGATE TO NEXT SECTOR</button>
             </div>
-            <div class="data-reveal" id="data-1">
-                <p>The Sun is the center of our solar system. It is a nearly perfect sphere of hot plasma, heated to incandescence by nuclear fusion reactions in its core.</p>
-            </div>
-            <div id="ui-1">
-                <input type="text" id="in-1" placeholder="KEY CODE" autocomplete="off">
-                <button class="action-btn" onclick="decrypt(1, 'SOL-01')">EXECUTE DECRYPTION</button>
-            </div>
-            <button class="action-btn next-btn" id="next-1" onclick="next(1)">NAVIGATE TO NEXT SECTOR</button>
-        </div>
 
-        <div class="stage" id="stg-2">
-            <h2>PHASE 02 // MERCURY</h2>
-            <div class="lock-container" id="lock-2">AUTHENTICATION REQUIRED</div>
-            <div class="data-reveal" id="data-2">
-                <p>Mercury is the smallest planet and the closest to the Sun. Its surface is scarred by craters, much like our Moon.</p>
+            <div class="stage" id="stg-2">
+                <h2>PHASE 02 // MERCURY</h2>
+                <div class="status-window" id="lock-2"><div class="alert-text">ACCESS RESTRICTED<br>[ UNAUTHORIZED SECTOR ]</div></div>
+                <div class="data-reveal" id="data-2">
+                    <span class="data-label">DECIPHERED CONTENT:</span>
+                    <p>[ INSERT MERCURY CONTENT HERE ]</p>
+                </div>
+                <div class="input-bay" id="ui-2">
+                    <div class="key-input-container"><input type="text" id="in-2" placeholder="KEY CODE"></div>
+                    <button class="action-btn decrypt-btn" onclick="checkCode(2, 'SWIFT')">EXECUTE DECRYPTION</button>
+                </div>
+                <button class="action-btn next-btn" id="next-2" onclick="goToNext(2)">NAVIGATE TO NEXT SECTOR</button>
             </div>
-            <div id="ui-2">
-                <input type="text" id="in-2" placeholder="KEY CODE">
-                <button class="action-btn" onclick="decrypt(2, 'FAST-2')">EXECUTE DECRYPTION</button>
-            </div>
-            <button class="action-btn next-btn" id="next-2" onclick="next(2)">NAVIGATE TO NEXT SECTOR</button>
-        </div>
-        
-        </main>
 
-    <div class="side-panel right-panel">
-        <div class="console-btn btn-b"></div><div class="console-btn"></div><div class="console-btn btn-r"></div>
-        <div class="console-btn"></div><div class="console-btn btn-y"></div><div class="console-btn"></div>
-        <div class="console-btn btn-y"></div><div class="console-btn"></div><div class="console-btn btn-b"></div>
-        <div class="console-btn"></div><div class="console-btn btn-r"></div><div class="console-btn"></div>
-    </div>
+            <div class="stage" id="stg-3">
+                <h2>PHASE 03 // VENUS</h2>
+                <div class="status-window" id="lock-3"><div class="alert-text">ACCESS RESTRICTED</div></div>
+                <div class="data-reveal" id="data-3"><span class="data-label">DECIPHERED CONTENT:</span><p>[ INSERT VENUS CONTENT HERE ]</p></div>
+                <div class="input-bay" id="ui-3">
+                    <div class="key-input-container"><input type="text" id="in-3"></div>
+                    <button class="action-btn decrypt-btn" onclick="checkCode(3, 'ACID')">EXECUTE DECRYPTION</button>
+                </div>
+                <button class="action-btn next-btn" id="next-3" onclick="goToNext(3)">NAVIGATE TO NEXT SECTOR</button>
+            </div>
+
+            <div class="stage" id="stg-4">
+                <h2>PHASE 04 // EARTH</h2>
+                <div class="status-window" id="lock-4"><div class="alert-text">ACCESS RESTRICTED</div></div>
+                <div class="data-reveal" id="data-4"><span class="data-label">DECIPHERED CONTENT:</span><p>[ INSERT EARTH CONTENT ]</p></div>
+                <div class="input-bay" id="ui-4">
+                    <div class="key-input-container"><input type="text" id="in-4"></div>
+                    <button class="action-btn decrypt-btn" onclick="checkCode(4, 'GAIA')">EXECUTE DECRYPTION</button>
+                </div>
+                <button class="action-btn next-btn" id="next-4" onclick="goToNext(4)">NAVIGATE TO NEXT SECTOR</button>
+            </div>
+
+            <div class="stage" id="stg-5">
+                <h2>PHASE 05 // MARS</h2>
+                <div class="status-window" id="lock-5"><div class="alert-text">ACCESS RESTRICTED</div></div>
+                <div class="data-reveal" id="data-5"><span class="data-label">DECIPHERED CONTENT:</span><p>[ MARS CONTENT ]</p></div>
+                <div class="input-bay" id="ui-5">
+                    <div class="key-input-container"><input type="text" id="in-5"></div>
+                    <button class="action-btn decrypt-btn" onclick="checkCode(5, 'ARES')">EXECUTE DECRYPTION</button>
+                </div>
+                <button class="action-btn next-btn" id="next-5" onclick="goToNext(5)">NAVIGATE TO NEXT SECTOR</button>
+            </div>
+
+            <div class="stage" id="stg-6">
+                <h2>PHASE 06 // JUPITER</h2>
+                <div class="status-window" id="lock-6"><div class="alert-text">ACCESS RESTRICTED</div></div>
+                <div class="data-reveal" id="data-6"><span class="data-label">DECIPHERED CONTENT:</span><p>[ JUPITER CONTENT ]</p></div>
+                <div class="input-bay" id="ui-6">
+                    <div class="key-input-container"><input type="text" id="in-6"></div>
+                    <button class="action-btn decrypt-btn" onclick="checkCode(6, 'ZEUS')">EXECUTE DECRYPTION</button>
+                </div>
+                <button class="action-btn next-btn" id="next-6" onclick="goToNext(6)">NAVIGATE TO NEXT SECTOR</button>
+            </div>
+
+            <div class="stage" id="stg-7">
+                <h2>PHASE 07 // SATURN</h2>
+                <div class="status-window" id="lock-7"><div class="alert-text">ACCESS RESTRICTED</div></div>
+                <div class="data-reveal" id="data-7"><span class="data-label">DECIPHERED CONTENT:</span><p>[ SATURN CONTENT ]</p></div>
+                <div class="input-bay" id="ui-7">
+                    <div class="key-input-container"><input type="text" id="in-7"></div>
+                    <button class="action-btn decrypt-btn" onclick="checkCode(7, 'HALO')">EXECUTE DECRYPTION</button>
+                </div>
+                <button class="action-btn next-btn" id="next-7" onclick="goToNext(7)">NAVIGATE TO NEXT SECTOR</button>
+            </div>
+
+            <div class="stage" id="stg-8">
+                <h2>PHASE 08 // URANUS</h2>
+                <div class="status-window" id="lock-8"><div class="alert-text">ACCESS RESTRICTED</div></div>
+                <div class="data-reveal" id="data-8"><span class="data-label">DECIPHERED CONTENT:</span><p>[ URANUS CONTENT ]</p></div>
+                <div class="input-bay" id="ui-8">
+                    <div class="key-input-container"><input type="text" id="in-8"></div>
+                    <button class="action-btn decrypt-btn" onclick="checkCode(8, 'TILT')">EXECUTE DECRYPTION</button>
+                </div>
+                <button class="action-btn next-btn" id="next-8" onclick="goToNext(8)">NAVIGATE TO NEXT SECTOR</button>
+            </div>
+
+            <div class="stage" id="stg-9">
+                <h2>PHASE 09 // NEPTUNE</h2>
+                <div class="status-window" id="lock-9"><div class="alert-text">ACCESS RESTRICTED</div></div>
+                <div class="data-reveal" id="data-9"><span class="data-label">DECIPHERED CONTENT:</span><p>[ NEPTUNE CONTENT ]</p></div>
+                <div class="input-bay" id="ui-9">
+                    <div class="key-input-container"><input type="text" id="in-9"></div>
+                    <button class="action-btn decrypt-btn" onclick="checkCode(9, 'STORM')">EXECUTE DECRYPTION</button>
+                </div>
+                <button class="action-btn next-btn" id="next-9" onclick="goToNext(9)">NAVIGATE TO NEXT SECTOR</button>
+            </div>
+
+            <div class="stage" id="stg-10">
+                <h2>PHASE 10 // VOYAGER</h2>
+                <div class="status-window" id="lock-10"><div class="alert-text">FINAL LOCK ENGAGED</div></div>
+                <div class="data-reveal" id="data-10"><span class="data-label">MISSION LOG:</span><p>Solar mapping complete. Humanity has ventured into the deep blue.</p></div>
+                <div class="input-bay" id="ui-10">
+                    <div class="key-input-container"><input type="text" id="in-10" placeholder="MASTER CODE"></div>
+                    <button class="action-btn decrypt-btn" onclick="checkCode(10, 'FREEDOM')">EXECUTE FINAL DECRYPTION</button>
+                </div>
+                <button class="action-btn next-btn" id="next-10" onclick="location.reload()">RESTART MISSION</button>
+            </div>
+        </div>
+    </main>
 
     <script>
-        function decrypt(n, code) {
-            const val = document.getElementById(`in-${n}`).value.toUpperCase().trim();
-            if (val === code) {
-                document.getElementById(`lock-${n}`).style.display = 'none';
+        function checkCode(n, code) {
+            const input = document.getElementById(`in-${n}`).value.toUpperCase().trim();
+            if (input === code) {
+                // Change UI to success
+                document.getElementById(`lock-${n}`).style.borderColor = 'var(--zaft-green)';
+                document.getElementById(`lock-${n}`).querySelector('.alert-text').innerText = "DECRYPTION SUCCESSFUL";
+                document.getElementById(`lock-${n}`).querySelector('.alert-text').style.color = 'var(--zaft-green)';
+                
                 document.getElementById(`ui-${n}`).style.display = 'none';
                 document.getElementById(`data-${n}`).style.display = 'block';
                 document.getElementById(`next-${n}`).style.display = 'block';
             } else {
-                alert("SYSTEM ERROR: CODE REJECTED");
+                alert("SYSTEM ERROR: INVALID ACCESS KEY");
             }
         }
 
-        function next(n) {
+        function goToNext(n) {
             document.getElementById(`stg-${n}`).classList.remove('active');
-            const nextStg = document.getElementById(`stg-${n+1}`);
-            if (nextStg) {
-                nextStg.classList.add('active');
-            } else {
-                alert("MISSION SUCCESS. ALL SECTORS MAPPED.");
-            }
+            const next = document.getElementById(`stg-${n+1}`);
+            if (next) next.classList.add('active');
         }
     </script>
 </body>
