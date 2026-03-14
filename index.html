@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZAFT MS-OS // MISSION: SOL</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <title>ZAFT MS-OS // 太陽系探索任務</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Noto+Sans+TC:wght@300;500&display=swap" rel="stylesheet">
     <style>
         :root {
             --zaft-red: #ff2a2a;
@@ -17,138 +17,51 @@
 
         body, html {
             margin: 0; padding: 0; height: 100vh;
-            background-color: #000;
-            color: #fff;
-            font-family: 'Inter', sans-serif;
-            overflow: hidden;
-            display: flex; justify-content: center; align-items: center;
+            background-color: #000; color: #fff;
+            font-family: 'Noto Sans TC', sans-serif;
+            overflow: hidden; display: flex; justify-content: center; align-items: center;
         }
 
-        /* --- COCKPIT BACKGROUND --- */
         .cockpit-frame {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(180deg, #1a1c20 0%, transparent 20%),
                         linear-gradient(0deg, #101215 0%, transparent 30%);
-            border: 20px solid #1a1c20;
-            box-sizing: border-box;
-            pointer-events: none;
-            z-index: 5;
+            border: 15px solid #1a1c20; box-sizing: border-box; pointer-events: none; z-index: 5;
         }
 
-        /* --- MAIN MONITOR --- */
         #main-monitor {
-            width: 90%;
-            max-width: 500px;
-            height: 80vh;
-            background: var(--monitor-bg);
-            border: 2px solid var(--panel-border);
-            position: relative;
-            z-index: 10;
-            padding: 25px;
-            box-sizing: border-box;
-            box-shadow: 0 0 40px rgba(0, 162, 255, 0.15);
-            display: flex;
-            flex-direction: column;
+            width: 90%; max-width: 550px; height: 85vh;
+            background: var(--monitor-bg); border: 2px solid var(--panel-border);
+            position: relative; z-index: 10; padding: 25px; box-sizing: border-box;
+            box-shadow: 0 0 40px rgba(0, 162, 255, 0.2); display: flex; flex-direction: column;
         }
 
         .os-header {
-            font-family: 'Orbitron';
-            color: var(--zaft-blue);
-            font-size: 0.7rem;
-            border-bottom: 2px solid var(--zaft-blue);
-            padding-bottom: 10px;
-            margin-bottom: 20px;
+            font-family: 'Orbitron'; color: var(--zaft-blue); font-size: 0.7rem;
+            border-bottom: 2px solid var(--zaft-blue); padding-bottom: 10px; margin-bottom: 20px;
             display: flex; justify-content: space-between;
         }
 
-        .stage { display: none; height: 100%; flex-direction: column; }
-        .stage.active { display: flex; }
+        .stage { display: none; height: 100%; flex-direction: column; overflow-y: auto; }
+        .stage.active { display: flex; animation: bootUp 0.3s ease-out; }
 
-        h2 { font-family: 'Orbitron'; font-size: 1.4rem; letter-spacing: 2px; margin: 0 0 20px 0; color: #fff; }
+        h2 { font-family: 'Orbitron'; font-size: 1.1rem; color: #fff; border-left: 4px solid var(--zaft-yellow); padding-left: 10px; margin-bottom: 15px; }
 
-        /* ERROR WINDOW STYLE */
-        .status-window {
-            border: 2px solid var(--zaft-red);
-            background: rgba(255, 42, 42, 0.08);
-            padding: 20px;
-            text-align: center;
-            margin-bottom: 20px;
-            position: relative;
-        }
+        .status-window { border: 1px solid var(--zaft-red); background: rgba(255, 42, 42, 0.1); padding: 15px; text-align: center; margin-bottom: 15px; font-family: 'Orbitron'; color: var(--zaft-red); font-size: 0.8rem; }
+        .status-ok { border-color: var(--zaft-green); background: rgba(57, 255, 20, 0.1); color: var(--zaft-green); }
 
-        .status-window::before {
-            content: "SYSTEM ALERT";
-            position: absolute;
-            top: -12px; left: 10px;
-            background: var(--zaft-red);
-            color: #000;
-            font-size: 0.6rem;
-            font-weight: bold;
-            padding: 2px 8px;
-            font-family: 'Orbitron';
-        }
+        .data-reveal { padding: 15px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255,255,255,0.2); color: #ddd; line-height: 1.7; margin-bottom: 15px; font-size: 0.95rem; }
+        .data-label { color: var(--zaft-green); font-family: 'Orbitron'; font-size: 0.7rem; display: block; margin-bottom: 8px; }
 
-        .alert-text { font-family: 'Orbitron'; color: var(--zaft-red); font-size: 0.9rem; line-height: 1.4; }
+        .input-area { margin-top: auto; }
+        input { width: 100%; background: #000; border: 1px solid var(--zaft-blue); color: var(--zaft-yellow); font-family: 'Orbitron'; font-size: 1.2rem; text-align: center; padding: 10px; box-sizing: border-box; margin-bottom: 10px; outline: none; }
 
-        /* DATA REVEAL STYLE */
-        .data-reveal {
-            display: none;
-            flex-grow: 1;
-            padding: 15px;
-            background: rgba(57, 255, 20, 0.05);
-            border: 1px solid var(--zaft-green);
-            color: #ccc;
-            line-height: 1.6;
-            margin-bottom: 20px;
-            overflow-y: auto;
-        }
+        .btn { width: 100%; padding: 14px; font-family: 'Orbitron'; font-weight: bold; border: none; cursor: pointer; text-transform: uppercase; transition: 0.2s; }
+        .btn-decrypt { background: var(--zaft-blue); color: white; }
+        .btn-next { background: var(--zaft-green); color: black; margin-top: 5px; }
+        .btn:hover { opacity: 0.8; }
 
-        .data-label { color: var(--zaft-green); font-family: 'Orbitron'; font-size: 0.7rem; margin-bottom: 10px; display: block; }
-
-        /* INPUT / ACTION SECTION */
-        .input-bay { margin-top: auto; }
-
-        .key-input-container {
-            border: 1px solid var(--zaft-blue);
-            padding: 5px;
-            margin-bottom: 10px;
-            background: rgba(50, 168, 255, 0.05);
-        }
-
-        input {
-            width: 100%;
-            background: transparent;
-            border: none;
-            color: var(--zaft-yellow);
-            font-family: 'Orbitron';
-            font-size: 1.5rem;
-            text-align: center;
-            outline: none;
-            padding: 10px 0;
-        }
-
-        .action-btn {
-            width: 100%;
-            padding: 15px;
-            font-family: 'Orbitron';
-            font-weight: bold;
-            border: none;
-            cursor: pointer;
-            text-transform: uppercase;
-            transition: 0.2s;
-        }
-
-        .decrypt-btn { background: var(--zaft-blue); color: white; }
-        .decrypt-btn:hover { background: #50b8ff; }
-
-        .next-btn { 
-            display: none; 
-            background: var(--zaft-green); 
-            color: #000; 
-            box-shadow: 0 0 15px var(--zaft-green);
-        }
-
+        @keyframes bootUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -157,151 +70,169 @@
 
     <main id="main-monitor">
         <div class="os-header">
-            <span>MOBILE SUIT NEO OPERATION SYSTEM</span>
-            <span>Ver. Z.A.F.T.</span>
+            <span>ZAFT MOBILE SUIT OS</span>
+            <span>MISSION ID: SOLAR_EXPLORER</span>
         </div>
 
-        <div id="stages-container">
-            <div class="stage active" id="stg-1">
-                <h2>PHASE 01 // THE SUN</h2>
-                <div class="status-window" id="lock-1">
-                    <div class="alert-text">AUTHENTICATION REQUIRED<br>[ SIGNAL JAMMED ]</div>
-                </div>
-                <div class="data-reveal" id="data-1">
-                    <span class="data-label">DECIPHERED CONTENT:</span>
-                    <p>[ INSERT SUN CONTENT HERE: Temperature, Fusion, Gravity ]</p>
-                </div>
-                <div class="input-bay" id="ui-1">
-                    <div class="key-input-container">
-                        <input type="text" id="in-1" placeholder="KEY CODE" autocomplete="off">
-                    </div>
-                    <button class="action-btn decrypt-btn" onclick="checkCode(1, 'HELIOS')">EXECUTE DECRYPTION</button>
-                </div>
-                <button class="action-btn next-btn" id="next-1" onclick="goToNext(1)">NAVIGATE TO NEXT SECTOR</button>
+        <div class="stage active" id="stg-0">
+            <h2>PHASE 00 // 任務簡報</h2>
+            <div class="data-reveal">
+                <span class="data-label">傳輸來源: P.L.A.N.T. 司令部</span>
+                「士兵，歡迎登艦。現在你正處於太陽系偵察艦的導航席。我們的目標是重新掃描從內行星到小行星帶的資源分布，並分析未來建設『亞力山大級』運輸路徑的可能性。部分關鍵數據受到密碼保護，你必須對照實體模型上的物理編碼才能解鎖，準備好開始這趟跨越引力井的旅程了嗎？」
             </div>
-
-            <div class="stage" id="stg-2">
-                <h2>PHASE 02 // MERCURY</h2>
-                <div class="status-window" id="lock-2"><div class="alert-text">ACCESS RESTRICTED<br>[ UNAUTHORIZED SECTOR ]</div></div>
-                <div class="data-reveal" id="data-2">
-                    <span class="data-label">DECIPHERED CONTENT:</span>
-                    <p>[ INSERT MERCURY CONTENT HERE ]</p>
-                </div>
-                <div class="input-bay" id="ui-2">
-                    <div class="key-input-container"><input type="text" id="in-2" placeholder="KEY CODE"></div>
-                    <button class="action-btn decrypt-btn" onclick="checkCode(2, 'SWIFT')">EXECUTE DECRYPTION</button>
-                </div>
-                <button class="action-btn next-btn" id="next-2" onclick="goToNext(2)">NAVIGATE TO NEXT SECTOR</button>
-            </div>
-
-            <div class="stage" id="stg-3">
-                <h2>PHASE 03 // VENUS</h2>
-                <div class="status-window" id="lock-3"><div class="alert-text">ACCESS RESTRICTED</div></div>
-                <div class="data-reveal" id="data-3"><span class="data-label">DECIPHERED CONTENT:</span><p>[ INSERT VENUS CONTENT HERE ]</p></div>
-                <div class="input-bay" id="ui-3">
-                    <div class="key-input-container"><input type="text" id="in-3"></div>
-                    <button class="action-btn decrypt-btn" onclick="checkCode(3, 'ACID')">EXECUTE DECRYPTION</button>
-                </div>
-                <button class="action-btn next-btn" id="next-3" onclick="goToNext(3)">NAVIGATE TO NEXT SECTOR</button>
-            </div>
-
-            <div class="stage" id="stg-4">
-                <h2>PHASE 04 // EARTH</h2>
-                <div class="status-window" id="lock-4"><div class="alert-text">ACCESS RESTRICTED</div></div>
-                <div class="data-reveal" id="data-4"><span class="data-label">DECIPHERED CONTENT:</span><p>[ INSERT EARTH CONTENT ]</p></div>
-                <div class="input-bay" id="ui-4">
-                    <div class="key-input-container"><input type="text" id="in-4"></div>
-                    <button class="action-btn decrypt-btn" onclick="checkCode(4, 'GAIA')">EXECUTE DECRYPTION</button>
-                </div>
-                <button class="action-btn next-btn" id="next-4" onclick="goToNext(4)">NAVIGATE TO NEXT SECTOR</button>
-            </div>
-
-            <div class="stage" id="stg-5">
-                <h2>PHASE 05 // MARS</h2>
-                <div class="status-window" id="lock-5"><div class="alert-text">ACCESS RESTRICTED</div></div>
-                <div class="data-reveal" id="data-5"><span class="data-label">DECIPHERED CONTENT:</span><p>[ MARS CONTENT ]</p></div>
-                <div class="input-bay" id="ui-5">
-                    <div class="key-input-container"><input type="text" id="in-5"></div>
-                    <button class="action-btn decrypt-btn" onclick="checkCode(5, 'ARES')">EXECUTE DECRYPTION</button>
-                </div>
-                <button class="action-btn next-btn" id="next-5" onclick="goToNext(5)">NAVIGATE TO NEXT SECTOR</button>
-            </div>
-
-            <div class="stage" id="stg-6">
-                <h2>PHASE 06 // JUPITER</h2>
-                <div class="status-window" id="lock-6"><div class="alert-text">ACCESS RESTRICTED</div></div>
-                <div class="data-reveal" id="data-6"><span class="data-label">DECIPHERED CONTENT:</span><p>[ JUPITER CONTENT ]</p></div>
-                <div class="input-bay" id="ui-6">
-                    <div class="key-input-container"><input type="text" id="in-6"></div>
-                    <button class="action-btn decrypt-btn" onclick="checkCode(6, 'ZEUS')">EXECUTE DECRYPTION</button>
-                </div>
-                <button class="action-btn next-btn" id="next-6" onclick="goToNext(6)">NAVIGATE TO NEXT SECTOR</button>
-            </div>
-
-            <div class="stage" id="stg-7">
-                <h2>PHASE 07 // SATURN</h2>
-                <div class="status-window" id="lock-7"><div class="alert-text">ACCESS RESTRICTED</div></div>
-                <div class="data-reveal" id="data-7"><span class="data-label">DECIPHERED CONTENT:</span><p>[ SATURN CONTENT ]</p></div>
-                <div class="input-bay" id="ui-7">
-                    <div class="key-input-container"><input type="text" id="in-7"></div>
-                    <button class="action-btn decrypt-btn" onclick="checkCode(7, 'HALO')">EXECUTE DECRYPTION</button>
-                </div>
-                <button class="action-btn next-btn" id="next-7" onclick="goToNext(7)">NAVIGATE TO NEXT SECTOR</button>
-            </div>
-
-            <div class="stage" id="stg-8">
-                <h2>PHASE 08 // URANUS</h2>
-                <div class="status-window" id="lock-8"><div class="alert-text">ACCESS RESTRICTED</div></div>
-                <div class="data-reveal" id="data-8"><span class="data-label">DECIPHERED CONTENT:</span><p>[ URANUS CONTENT ]</p></div>
-                <div class="input-bay" id="ui-8">
-                    <div class="key-input-container"><input type="text" id="in-8"></div>
-                    <button class="action-btn decrypt-btn" onclick="checkCode(8, 'TILT')">EXECUTE DECRYPTION</button>
-                </div>
-                <button class="action-btn next-btn" id="next-8" onclick="goToNext(8)">NAVIGATE TO NEXT SECTOR</button>
-            </div>
-
-            <div class="stage" id="stg-9">
-                <h2>PHASE 09 // NEPTUNE</h2>
-                <div class="status-window" id="lock-9"><div class="alert-text">ACCESS RESTRICTED</div></div>
-                <div class="data-reveal" id="data-9"><span class="data-label">DECIPHERED CONTENT:</span><p>[ NEPTUNE CONTENT ]</p></div>
-                <div class="input-bay" id="ui-9">
-                    <div class="key-input-container"><input type="text" id="in-9"></div>
-                    <button class="action-btn decrypt-btn" onclick="checkCode(9, 'STORM')">EXECUTE DECRYPTION</button>
-                </div>
-                <button class="action-btn next-btn" id="next-9" onclick="goToNext(9)">NAVIGATE TO NEXT SECTOR</button>
-            </div>
-
-            <div class="stage" id="stg-10">
-                <h2>PHASE 10 // VOYAGER</h2>
-                <div class="status-window" id="lock-10"><div class="alert-text">FINAL LOCK ENGAGED</div></div>
-                <div class="data-reveal" id="data-10"><span class="data-label">MISSION LOG:</span><p>Solar mapping complete. Humanity has ventured into the deep blue.</p></div>
-                <div class="input-bay" id="ui-10">
-                    <div class="key-input-container"><input type="text" id="in-10" placeholder="MASTER CODE"></div>
-                    <button class="action-btn decrypt-btn" onclick="checkCode(10, 'FREEDOM')">EXECUTE FINAL DECRYPTION</button>
-                </div>
-                <button class="action-btn next-btn" id="next-10" onclick="location.reload()">RESTART MISSION</button>
-            </div>
+            <button class="btn btn-next" style="display:block" onclick="go(0)">啟動引擎，開始任務</button>
         </div>
+
+        <div class="stage" id="stg-1">
+            <h2>PHASE 01 // 內行星觀測</h2>
+            <div class="status-window" id="lock-1">AUTHENTICATION REQUIRED</div>
+            <div class="data-reveal" id="data-1" style="display:none">
+                <span class="data-label">解密內容:</span>
+                啟動階段：從太陽出發。水星極端的晝夜溫差、金星窒息的高壓、地球的搖籃、火星的赤紅荒漠。這四顆岩石行星是人類最初的足跡，也是我們理解宇宙環境的起點。
+            </div>
+            <div class="input-area" id="ui-1">
+                <input type="text" id="in-1" placeholder="ENTER CODE">
+                <button class="btn btn-decrypt" onclick="check(1, 'TERRA')">執行解密</button>
+            </div>
+            <button class="btn btn-next" id="next-1" onclick="go(1)">下一象限</button>
+        </div>
+
+        <div class="stage" id="stg-2">
+            <h2>PHASE 02 // 環境影響因子</h2>
+            <div class="status-window status-ok">AUTO-DECRYPTED</div>
+            <div class="data-reveal">
+                行星特徵決定了開發難度。火星的低重力與稀薄大氣雖然危險，卻比金星的酸雨環境更適合建立第一座密閉殖民地。重力大小直接影響了人類骨骼的長期生長。
+            </div>
+            <button class="btn btn-next" style="display:block" onclick="go(2)">下一象限</button>
+        </div>
+
+        <div class="stage" id="stg-3">
+            <h2>PHASE 03 // 引力的平衡點</h2>
+            <div class="status-window" id="lock-3">ACCESS RESTRICTED</div>
+            <div class="data-reveal" id="data-3" style="display:none">
+                拉格朗日點 (Lagrange Points)：在兩個天體的引力交會處，存在五個穩定的平衡點。這裡是放置觀測站與轉運點的最佳選擇，無需消耗大量燃料即可維持位置。
+            </div>
+            <div class="input-area" id="ui-3">
+                <input type="text" id="in-3" placeholder="ENTER CODE">
+                <button class="btn btn-decrypt" onclick="check(3, 'LPOINT')">執行解密</button>
+            </div>
+            <button class="btn btn-next" id="next-3" onclick="go(3)">下一象限</button>
+        </div>
+
+        <div class="stage" id="stg-4">
+            <h2>PHASE 04 // 月球門戶計畫</h2>
+            <div class="status-window status-ok">AUTO-DECRYPTED</div>
+            <div class="data-reveal">
+                根據拉格朗日點的概念，我們將月球軌道站設在 L1 或 L2。這裡不僅是降落月球的補給站，更是通往深空的跳板，避開了地球沈重的引力井。
+            </div>
+            <button class="btn btn-next" style="display:block" onclick="go(4)">下一象限</button>
+        </div>
+
+        <div class="stage" id="stg-5">
+            <h2>PHASE 05 // 月球基地開發</h2>
+            <div class="status-window" id="lock-5">ACCESS RESTRICTED</div>
+            <div class="data-reveal" id="data-5" style="display:none">
+                月球重力僅地球 1/6，且極地陰影區藏有水冰。水冰能電解成氫氧燃料。未來的月面將佈滿太陽能板陣列，人類居住在防輻射的穹頂基地中，駕駛月球車穿梭。
+            </div>
+            <div class="input-area" id="ui-5">
+                <input type="text" id="in-5" placeholder="ENTER CODE">
+                <button class="btn btn-decrypt" onclick="check(5, 'LUNAR')">執行解密</button>
+            </div>
+            <button class="btn btn-next" id="next-5" onclick="go(5)">下一象限</button>
+        </div>
+
+        <div class="stage" id="stg-6">
+            <h2>PHASE 06 // 碎石的地帶</h2>
+            <div class="status-window status-ok">AUTO-DECRYPTED</div>
+            <div class="data-reveal">
+                橫亙在火星與木星之間，小行星帶並非電影那樣擁擠，但卻是數百萬顆岩石的家園。這是前往外行星的最後一道檢查哨。
+            </div>
+            <button class="btn btn-next" style="display:block" onclick="go(6)">下一象限</button>
+        </div>
+
+        <div class="stage" id="stg-7">
+            <h2>PHASE 07 // 小行星帶構造</h2>
+            <div class="status-window status-ok">AUTO-DECRYPTED</div>
+            <div class="data-reveal">
+                小行星分為 C 型(碳質)、S 型(矽質)及 M 型(金屬質)。每一顆都是太陽系誕生時留下的原始建材，隱藏著恆星演化的祕密。
+            </div>
+            <button class="btn btn-next" style="display:block" onclick="go(7)">下一象限</button>
+        </div>
+
+        <div class="stage" id="stg-8">
+            <h2>PHASE 08 // 資源衛星背景</h2>
+            <div class="status-window" id="lock-8">ACCESS RESTRICTED</div>
+            <div class="data-reveal" id="data-8" style="display:none">
+                如同 U.C. 時代的資源衛星，為了供應地球圈龐大的建設，人類必須向小行星帶伸手。這裡將成為工業基地與資源補給的前線。
+            </div>
+            <div class="input-area" id="ui-8">
+                <input type="text" id="in-8" placeholder="ENTER CODE">
+                <button class="btn btn-decrypt" onclick="check(8, 'RESOURCE')">執行解密</button>
+            </div>
+            <button class="btn btn-next" id="next-8" onclick="go(8)">下一象限</button>
+        </div>
+
+        <div class="stage" id="stg-9">
+            <h2>PHASE 09 // 礦產資源競爭</h2>
+            <div class="status-window status-ok">AUTO-DECRYPTED</div>
+            <div class="data-reveal">
+                鐵、鎳用於建築，鉑族金屬用於高端電子零件，而最重要的依然是『水冰』。誰掌握了水冰，誰就掌握了太空航行的續航權，資源爭奪戰一觸即發。
+            </div>
+            <button class="btn btn-next" style="display:block" onclick="go(9)">下一象限</button>
+        </div>
+
+        <div class="stage" id="stg-10">
+            <h2>PHASE 10 // 旋轉重力原理</h2>
+            <div class="status-window" id="lock-10">ACCESS RESTRICTED</div>
+            <div class="data-reveal" id="data-10" style="display:none">
+                在低重力小行星，我們利用旋轉產生離心力來模擬重力。封閉式太空農業利用太陽集光鏡提供光合作用，實現太空物資的自給自足。
+            </div>
+            <div class="input-area" id="ui-10">
+                <input type="text" id="in-10" placeholder="ENTER CODE">
+                <button class="btn btn-decrypt" onclick="check(10, 'GRAVITY')">執行解密</button>
+            </div>
+            <button class="btn btn-next" id="next-10" onclick="go(10)">下一象限</button>
+        </div>
+
+        <div class="stage" id="stg-11">
+            <h2>PHASE 11 // 氣體巨星的領域</h2>
+            <div class="status-window status-ok">AUTO-DECRYPTED</div>
+            <div class="data-reveal">
+                木星的風暴、土星的環帶、天王星的冰冷、海王星的深邃。這些巨大的氣體與冰巨星，擁有豐富的氦與氫，是未來核融合動力爐的無盡礦場。
+            </div>
+            <button class="btn btn-next" style="display:block" onclick="go(11)">下一象限</button>
+        </div>
+
+        <div class="stage" id="stg-12">
+            <h2>PHASE 12 // 未來航向</h2>
+            <div class="status-window" id="lock-12">FINAL MISSION LOCK</div>
+            <div class="data-reveal" id="data-12" style="display:none">
+                旅途結束。真實世界的挑戰在於如何降低運輸成本。從科幻的離子推進器到核熱火箭，太空電梯或許不再是夢。我們正從『探險者』轉變為真正的『星際種族』。
+            </div>
+            <div class="input-area" id="ui-12">
+                <input type="text" id="in-12" placeholder="ENTER MASTER CODE">
+                <button class="btn btn-decrypt" onclick="check(12, 'VOYAGER')">最終解碼</button>
+            </div>
+            <button class="btn btn-next" id="next-12" onclick="alert('任務達成。正在歸還指揮權...')">完成探索</button>
+        </div>
+
     </main>
 
     <script>
-        function checkCode(n, code) {
+        function check(n, code) {
             const input = document.getElementById(`in-${n}`).value.toUpperCase().trim();
             if (input === code) {
-                // Change UI to success
-                document.getElementById(`lock-${n}`).style.borderColor = 'var(--zaft-green)';
-                document.getElementById(`lock-${n}`).querySelector('.alert-text').innerText = "DECRYPTION SUCCESSFUL";
-                document.getElementById(`lock-${n}`).querySelector('.alert-text').style.color = 'var(--zaft-green)';
-                
+                document.getElementById(`lock-${n}`).classList.add('status-ok');
+                document.getElementById(`lock-${n}`).innerText = "VERIFICATION PASSED";
                 document.getElementById(`ui-${n}`).style.display = 'none';
                 document.getElementById(`data-${n}`).style.display = 'block';
                 document.getElementById(`next-${n}`).style.display = 'block';
             } else {
-                alert("SYSTEM ERROR: INVALID ACCESS KEY");
+                alert("SYSTEM ERROR: 驗證碼錯誤，請檢查實體模型");
             }
         }
 
-        function goToNext(n) {
+        function go(n) {
             document.getElementById(`stg-${n}`).classList.remove('active');
             const next = document.getElementById(`stg-${n+1}`);
             if (next) next.classList.add('active');
