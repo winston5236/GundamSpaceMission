@@ -3,65 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZAFT MS-OS // 太陽系探索任務</title>
+    <title>ZAFT MS-OS // 太陽系教育任務</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Noto+Sans+TC:wght@300;500&display=swap" rel="stylesheet">
     <style>
         :root {
-            --zaft-red: #ff2a2a;
-            --zaft-blue: #32a8ff;
-            --zaft-green: #39ff14;
-            --zaft-yellow: #f4d03f;
-            --monitor-bg: #05080a;
-            --panel-border: #3d424b;
+            --zaft-red: #ff2a2a; --zaft-blue: #32a8ff; --zaft-green: #39ff14;
+            --zaft-yellow: #f4d03f; --monitor-bg: #05080a; --panel-border: #3d424b;
         }
 
         body, html {
-            margin: 0; padding: 0; height: 100vh;
-            background-color: #000; color: #fff;
-            font-family: 'Noto Sans TC', sans-serif;
-            overflow: hidden; display: flex; justify-content: center; align-items: center;
+            margin: 0; padding: 0; height: 100vh; background-color: #000; color: #fff;
+            font-family: 'Noto Sans TC', sans-serif; overflow: hidden; display: flex; flex-direction: column;
         }
 
         .cockpit-frame {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(180deg, #1a1c20 0%, transparent 20%),
-                        linear-gradient(0deg, #101215 0%, transparent 30%);
+            background: linear-gradient(180deg, #1a1c20 0%, transparent 15%),
+                        linear-gradient(0deg, #101215 0%, transparent 20%);
             border: 15px solid #1a1c20; box-sizing: border-box; pointer-events: none; z-index: 5;
         }
 
         #main-monitor {
-            width: 90%; max-width: 550px; height: 85vh;
+            flex-grow: 1; width: 90%; max-width: 600px; margin: 20px auto;
             background: var(--monitor-bg); border: 2px solid var(--panel-border);
             position: relative; z-index: 10; padding: 25px; box-sizing: border-box;
-            box-shadow: 0 0 40px rgba(0, 162, 255, 0.2); display: flex; flex-direction: column;
+            box-shadow: 0 0 40px rgba(0, 162, 255, 0.2); display: flex; flex-direction: column; overflow: hidden;
         }
 
         .os-header {
             font-family: 'Orbitron'; color: var(--zaft-blue); font-size: 0.7rem;
-            border-bottom: 2px solid var(--zaft-blue); padding-bottom: 10px; margin-bottom: 20px;
+            border-bottom: 2px solid var(--zaft-blue); padding-bottom: 10px; margin-bottom: 15px;
             display: flex; justify-content: space-between;
         }
 
-        .stage { display: none; height: 100%; flex-direction: column; overflow-y: auto; }
+        .stage { display: none; height: 100%; flex-direction: column; overflow-y: auto; padding-right: 5px; }
         .stage.active { display: flex; animation: bootUp 0.3s ease-out; }
 
         h2 { font-family: 'Orbitron'; font-size: 1.1rem; color: #fff; border-left: 4px solid var(--zaft-yellow); padding-left: 10px; margin-bottom: 15px; }
+        p { margin: 8px 0; }
 
-        .status-window { border: 1px solid var(--zaft-red); background: rgba(255, 42, 42, 0.1); padding: 15px; text-align: center; margin-bottom: 15px; font-family: 'Orbitron'; color: var(--zaft-red); font-size: 0.8rem; }
+        .status-window { border: 1px solid var(--zaft-red); background: rgba(255, 42, 42, 0.1); padding: 12px; text-align: center; margin-bottom: 15px; font-family: 'Orbitron'; color: var(--zaft-red); font-size: 0.8rem; }
         .status-ok { border-color: var(--zaft-green); background: rgba(57, 255, 20, 0.1); color: var(--zaft-green); }
 
-        .data-reveal { padding: 15px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255,255,255,0.2); color: #ddd; line-height: 1.7; margin-bottom: 15px; font-size: 0.95rem; }
-        .data-label { color: var(--zaft-green); font-family: 'Orbitron'; font-size: 0.7rem; display: block; margin-bottom: 8px; }
+        .data-reveal { padding: 15px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255,255,255,0.2); color: #ddd; line-height: 1.7; margin-bottom: 15px; font-size: 0.9rem; }
+        .data-label { color: var(--zaft-green); font-family: 'Orbitron'; font-size: 0.7rem; display: block; margin-bottom: 5px; border-bottom: 1px solid var(--zaft-green); width: fit-content; }
 
         .input-area { margin-top: auto; }
-        input { width: 100%; background: #000; border: 1px solid var(--zaft-blue); color: var(--zaft-yellow); font-family: 'Orbitron'; font-size: 1.2rem; text-align: center; padding: 10px; box-sizing: border-box; margin-bottom: 10px; outline: none; }
+        input { width: 100%; background: #000; border: 1px solid var(--zaft-blue); color: var(--zaft-yellow); font-family: 'Orbitron'; font-size: 1.2rem; text-align: center; padding: 10px; margin-bottom: 10px; outline: none; }
 
-        .btn { width: 100%; padding: 14px; font-family: 'Orbitron'; font-weight: bold; border: none; cursor: pointer; text-transform: uppercase; transition: 0.2s; }
+        .btn { width: 100%; padding: 14px; font-family: 'Orbitron'; font-weight: bold; border: none; cursor: pointer; text-transform: uppercase; }
         .btn-decrypt { background: var(--zaft-blue); color: white; }
         .btn-next { background: var(--zaft-green); color: black; margin-top: 5px; }
-        .btn:hover { opacity: 0.8; }
 
-        @keyframes bootUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* 進度條樣式 */
+        #nav-footer {
+            height: 60px; background: #15181d; z-index: 20; border-top: 1px solid var(--panel-border);
+            display: flex; align-items: center; justify-content: center; padding: 0 20px; gap: 5px;
+        }
+        .nav-dot {
+            width: 25px; height: 18px; background: #333; border: 1px solid #555;
+            font-family: 'Orbitron'; font-size: 0.6rem; display: flex; align-items: center; justify-content: center;
+            cursor: not-allowed; color: #666; transition: 0.3s;
+        }
+        .nav-dot.unlocked { background: var(--zaft-blue); color: white; border-color: #fff; cursor: pointer; }
+        .nav-dot.current { border: 2px solid var(--zaft-yellow); box-shadow: 0 0 10px var(--zaft-yellow); }
+
+        @keyframes bootUp { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
@@ -70,172 +77,163 @@
 
     <main id="main-monitor">
         <div class="os-header">
-            <span>ZAFT MOBILE SUIT OS</span>
-            <span>MISSION ID: SOLAR_EXPLORER</span>
+            <span>ZAFT MS-OS VER 5.0</span>
+            <span id="coord-display">COORD: PHASE 00</span>
         </div>
 
-        <div class="stage active" id="stg-0">
-            <h2>PHASE 00 // 任務簡報</h2>
-            <div class="data-reveal">
-                <span class="data-label">傳輸來源: P.L.A.N.T. 司令部</span>
-                「士兵，歡迎登艦。現在你正處於太陽系偵察艦的導航席。我們的目標是重新掃描從內行星到小行星帶的資源分布，並分析未來建設『亞力山大級』運輸路徑的可能性。部分關鍵數據受到密碼保護，你必須對照實體模型上的物理編碼才能解鎖，準備好開始這趟跨越引力井的旅程了嗎？」
+        <div id="stages-container">
+            <div class="stage active" id="stg-0">
+                <h2>PHASE 00 // 任務導航啟動</h2>
+                <div class="data-reveal">
+                    「士兵，歡迎。本設備將帶領你深入太陽系。請根據實體模型的指引，解鎖受限數據。完成解密後，你可透過下方導航列隨時回溯已獲取的知識。」
+                </div>
+                <button class="btn btn-next" style="display:block" onclick="go(0)">開始導航</button>
             </div>
-            <button class="btn btn-next" style="display:block" onclick="go(0)">啟動引擎，開始任務</button>
-        </div>
 
-        <div class="stage" id="stg-1">
-            <h2>PHASE 01 // 內行星觀測</h2>
-            <div class="status-window" id="lock-1">AUTHENTICATION REQUIRED</div>
-            <div class="data-reveal" id="data-1" style="display:none">
-                <span class="data-label">解密內容:</span>
-                啟動階段：從太陽出發。水星極端的晝夜溫差、金星窒息的高壓、地球的搖籃、火星的赤紅荒漠。這四顆岩石行星是人類最初的足跡，也是我們理解宇宙環境的起點。
+            <div class="stage" id="stg-1">
+                <h2>PHASE 01 // 內行星教學</h2>
+                <div class="status-window" id="lock-1">AUTHENTICATION REQUIRED</div>
+                <div class="data-reveal" id="data-1" style="display:none">
+                    <span class="data-label">類地行星觀測數據：</span>
+                    <b>水星 (Mercury)：</b>離太陽最近，幾乎沒有大氣，晝夜溫差高達 600°C。<br>
+                    <b>金星 (Venus)：</b>濃厚的二氧化碳引發極端溫室效應，表面高壓且足以融化鉛。<br>
+                    <b>地球 (Earth)：</b>目前已知唯一擁有液態水與複雜生命的行星。<br>
+                    <b>火星 (Mars)：</b>擁有稀薄大氣與地表水冰，是人類太空殖民的首選站。
+                </div>
+                <div class="input-area" id="ui-1">
+                    <input type="text" id="in-1" placeholder="ENTER CODE">
+                    <button class="btn btn-decrypt" onclick="check(1, 'TERRA')">執行解密</button>
+                </div>
+                <button class="btn btn-next" id="next-1" onclick="go(1)">下一象限</button>
             </div>
-            <div class="input-area" id="ui-1">
-                <input type="text" id="in-1" placeholder="ENTER CODE">
-                <button class="btn btn-decrypt" onclick="check(1, 'TERRA')">執行解密</button>
-            </div>
-            <button class="btn btn-next" id="next-1" onclick="go(1)">下一象限</button>
-        </div>
 
-        <div class="stage" id="stg-2">
-            <h2>PHASE 02 // 環境影響因子</h2>
-            <div class="status-window status-ok">AUTO-DECRYPTED</div>
-            <div class="data-reveal">
-                行星特徵決定了開發難度。火星的低重力與稀薄大氣雖然危險，卻比金星的酸雨環境更適合建立第一座密閉殖民地。重力大小直接影響了人類骨骼的長期生長。
+            <div class="stage" id="stg-2">
+                <h2>PHASE 02 // 殖民影響因子</h2>
+                <div class="status-window status-ok">AUTO-DECRYPTED</div>
+                <div class="data-reveal">
+                    行星的<b>引力大小</b>決定了人類骨骼的健康與降落難度；<b>大氣成分</b>決定了生存基地的密閉需求。例如，在低重力的火星長期生活，必須考慮人造重力訓練以維持生理機能。
+                </div>
+                <button class="btn btn-next" style="display:block" onclick="go(2)">下一象限</button>
             </div>
-            <button class="btn btn-next" style="display:block" onclick="go(2)">下一象限</button>
-        </div>
 
-        <div class="stage" id="stg-3">
-            <h2>PHASE 03 // 引力的平衡點</h2>
-            <div class="status-window" id="lock-3">ACCESS RESTRICTED</div>
-            <div class="data-reveal" id="data-3" style="display:none">
-                拉格朗日點 (Lagrange Points)：在兩個天體的引力交會處，存在五個穩定的平衡點。這裡是放置觀測站與轉運點的最佳選擇，無需消耗大量燃料即可維持位置。
+            <div class="stage" id="stg-3">
+                <h2>PHASE 03 // 拉格朗日點</h2>
+                <div class="status-window" id="lock-3">ACCESS RESTRICTED</div>
+                <div class="data-reveal" id="data-3" style="display:none">
+                    在星體引力交會處，存在五個平衡點。<b>L1 點</b>位於兩星之間，適合觀測；<b>L4 與 L5</b> 則是最穩定的「引力陷阱」，在鋼彈世界中，這裡常是巨大殖民衛星群的所在地。
+                </div>
+                <div class="input-area" id="ui-3">
+                    <input type="text" id="in-3"><button class="btn btn-decrypt" onclick="check(3, 'LPOINT')">解密</button>
+                </div>
+                <button class="btn btn-next" id="next-3" onclick="go(3)">下一象限</button>
             </div>
-            <div class="input-area" id="ui-3">
-                <input type="text" id="in-3" placeholder="ENTER CODE">
-                <button class="btn btn-decrypt" onclick="check(3, 'LPOINT')">執行解密</button>
-            </div>
-            <button class="btn btn-next" id="next-3" onclick="go(3)">下一象限</button>
-        </div>
 
-        <div class="stage" id="stg-4">
-            <h2>PHASE 04 // 月球門戶計畫</h2>
-            <div class="status-window status-ok">AUTO-DECRYPTED</div>
-            <div class="data-reveal">
-                根據拉格朗日點的概念，我們將月球軌道站設在 L1 或 L2。這裡不僅是降落月球的補給站，更是通往深空的跳板，避開了地球沈重的引力井。
+            <div class="stage" id="stg-4">
+                <h2>PHASE 04 // 月球門戶定位</h2>
+                <div class="status-window status-ok">AUTO-DECRYPTED</div>
+                <div class="data-reveal">
+                    將太空站設在<b>月球 LOP-G (月球軌道門戶)</b>，能以最少的燃料維持位置，並作為連接地月系統與深空探測的轉運港。
+                </div>
+                <button class="btn btn-next" style="display:block" onclick="go(4)">下一象限</button>
             </div>
-            <button class="btn btn-next" style="display:block" onclick="go(4)">下一象限</button>
-        </div>
 
-        <div class="stage" id="stg-5">
-            <h2>PHASE 05 // 月球基地開發</h2>
-            <div class="status-window" id="lock-5">ACCESS RESTRICTED</div>
-            <div class="data-reveal" id="data-5" style="display:none">
-                月球重力僅地球 1/6，且極地陰影區藏有水冰。水冰能電解成氫氧燃料。未來的月面將佈滿太陽能板陣列，人類居住在防輻射的穹頂基地中，駕駛月球車穿梭。
+            <div class="stage" id="stg-5">
+                <h2>PHASE 05 // 月球殖民原理</h2>
+                <div class="status-window" id="lock-5">ACCESS RESTRICTED</div>
+                <div class="data-reveal" id="data-5" style="display:none">
+                    月球重力僅 1/6，利於發射飛船。利用月表坑洞建立<b>穹頂基地</b>可防輻射，並挖掘極地<b>水冰</b>轉化為氧氣與火箭燃料，將其打造為星際加油站。
+                </div>
+                <div class="input-area" id="ui-5">
+                    <input type="text" id="in-5"><button class="btn btn-decrypt" onclick="check(5, 'LUNAR')">解密</button>
+                </div>
+                <button class="btn btn-next" id="next-5" onclick="go(5)">下一象限</button>
             </div>
-            <div class="input-area" id="ui-5">
-                <input type="text" id="in-5" placeholder="ENTER CODE">
-                <button class="btn btn-decrypt" onclick="check(5, 'LUNAR')">執行解密</button>
-            </div>
-            <button class="btn btn-next" id="next-5" onclick="go(5)">下一象限</button>
-        </div>
 
-        <div class="stage" id="stg-6">
-            <h2>PHASE 06 // 碎石的地帶</h2>
-            <div class="status-window status-ok">AUTO-DECRYPTED</div>
-            <div class="data-reveal">
-                橫亙在火星與木星之間，小行星帶並非電影那樣擁擠，但卻是數百萬顆岩石的家園。這是前往外行星的最後一道檢查哨。
+            <div class="stage" id="stg-11">
+                <h2>PHASE 11 // 外行星教學</h2>
+                <div class="status-window status-ok">AUTO-DECRYPTED</div>
+                <div class="data-reveal">
+                    <span class="data-label">氣體與冰巨星數據：</span>
+                    <b>木星 (Jupiter)：</b>太陽系最大行星，巨大的「大紅斑」是持續數百年的氣旋。<br>
+                    <b>土星 (Saturn)：</b>擁有最壯觀的碎冰環系統，密度低到能浮在水面上。<br>
+                    <b>天王星 (Uranus)：</b>橫躺著自轉的冰巨星，大氣充滿甲烷呈現淡藍色。<br>
+                    <b>海王星 (Neptune)：</b>擁有太陽系最強勁的強風，是離太陽最遠的寒冷邊疆。
+                </div>
+                <button class="btn btn-next" style="display:block" onclick="go(11)">下一象限</button>
             </div>
-            <button class="btn btn-next" style="display:block" onclick="go(6)">下一象限</button>
-        </div>
 
-        <div class="stage" id="stg-7">
-            <h2>PHASE 07 // 小行星帶構造</h2>
-            <div class="status-window status-ok">AUTO-DECRYPTED</div>
-            <div class="data-reveal">
-                小行星分為 C 型(碳質)、S 型(矽質)及 M 型(金屬質)。每一顆都是太陽系誕生時留下的原始建材，隱藏著恆星演化的祕密。
+            <div class="stage" id="stg-12">
+                <h2>PHASE 12 // 未來太空運輸</h2>
+                <div class="status-window" id="lock-12">FINAL MISSION LOCK</div>
+                <div class="data-reveal" id="data-12" style="display:none">
+                    未來的太空運輸將依賴<b>核動力推進</b>與<b>太空電梯</b>。雖然目前仍屬科幻，但隨著材料科學進步（如碳奈米管），從地表直達太空軌道的成本將降低 99%。
+                </div>
+                <div class="input-area" id="ui-12">
+                    <input type="text" id="in-12"><button class="btn btn-decrypt" onclick="check(12, 'VOYAGER')">最終解密</button>
+                </div>
+                <button class="btn btn-next" id="next-12" onclick="alert('任務達成。')">結束旅程</button>
             </div>
-            <button class="btn btn-next" style="display:block" onclick="go(7)">下一象限</button>
-        </div>
 
-        <div class="stage" id="stg-8">
-            <h2>PHASE 08 // 資源衛星背景</h2>
-            <div class="status-window" id="lock-8">ACCESS RESTRICTED</div>
-            <div class="data-reveal" id="data-8" style="display:none">
-                如同 U.C. 時代的資源衛星，為了供應地球圈龐大的建設，人類必須向小行星帶伸手。這裡將成為工業基地與資源補給的前線。
-            </div>
-            <div class="input-area" id="ui-8">
-                <input type="text" id="in-8" placeholder="ENTER CODE">
-                <button class="btn btn-decrypt" onclick="check(8, 'RESOURCE')">執行解密</button>
-            </div>
-            <button class="btn btn-next" id="next-8" onclick="go(8)">下一象限</button>
         </div>
-
-        <div class="stage" id="stg-9">
-            <h2>PHASE 09 // 礦產資源競爭</h2>
-            <div class="status-window status-ok">AUTO-DECRYPTED</div>
-            <div class="data-reveal">
-                鐵、鎳用於建築，鉑族金屬用於高端電子零件，而最重要的依然是『水冰』。誰掌握了水冰，誰就掌握了太空航行的續航權，資源爭奪戰一觸即發。
-            </div>
-            <button class="btn btn-next" style="display:block" onclick="go(9)">下一象限</button>
-        </div>
-
-        <div class="stage" id="stg-10">
-            <h2>PHASE 10 // 旋轉重力原理</h2>
-            <div class="status-window" id="lock-10">ACCESS RESTRICTED</div>
-            <div class="data-reveal" id="data-10" style="display:none">
-                在低重力小行星，我們利用旋轉產生離心力來模擬重力。封閉式太空農業利用太陽集光鏡提供光合作用，實現太空物資的自給自足。
-            </div>
-            <div class="input-area" id="ui-10">
-                <input type="text" id="in-10" placeholder="ENTER CODE">
-                <button class="btn btn-decrypt" onclick="check(10, 'GRAVITY')">執行解密</button>
-            </div>
-            <button class="btn btn-next" id="next-10" onclick="go(10)">下一象限</button>
-        </div>
-
-        <div class="stage" id="stg-11">
-            <h2>PHASE 11 // 氣體巨星的領域</h2>
-            <div class="status-window status-ok">AUTO-DECRYPTED</div>
-            <div class="data-reveal">
-                木星的風暴、土星的環帶、天王星的冰冷、海王星的深邃。這些巨大的氣體與冰巨星，擁有豐富的氦與氫，是未來核融合動力爐的無盡礦場。
-            </div>
-            <button class="btn btn-next" style="display:block" onclick="go(11)">下一象限</button>
-        </div>
-
-        <div class="stage" id="stg-12">
-            <h2>PHASE 12 // 未來航向</h2>
-            <div class="status-window" id="lock-12">FINAL MISSION LOCK</div>
-            <div class="data-reveal" id="data-12" style="display:none">
-                旅途結束。真實世界的挑戰在於如何降低運輸成本。從科幻的離子推進器到核熱火箭，太空電梯或許不再是夢。我們正從『探險者』轉變為真正的『星際種族』。
-            </div>
-            <div class="input-area" id="ui-12">
-                <input type="text" id="in-12" placeholder="ENTER MASTER CODE">
-                <button class="btn btn-decrypt" onclick="check(12, 'VOYAGER')">最終解碼</button>
-            </div>
-            <button class="btn btn-next" id="next-12" onclick="alert('任務達成。正在歸還指揮權...')">完成探索</button>
-        </div>
-
     </main>
 
+    <footer id="nav-footer">
+        </footer>
+
     <script>
+        let currentMaxStage = 0;
+        const totalStages = 13; // 0 到 12 共 13 個
+
+        // 初始化進度條
+        const footer = document.getElementById('nav-footer');
+        for (let i = 0; i < totalStages; i++) {
+            let dot = document.createElement('div');
+            dot.id = `dot-${i}`;
+            dot.className = 'nav-dot';
+            dot.innerText = i;
+            dot.onclick = () => jumpTo(i);
+            footer.appendChild(dot);
+        }
+        updateNav();
+
         function check(n, code) {
-            const input = document.getElementById(`in-${n}`).value.toUpperCase().trim();
-            if (input === code) {
+            const val = document.getElementById(`in-${n}`).value.toUpperCase().trim();
+            if (val === code) {
                 document.getElementById(`lock-${n}`).classList.add('status-ok');
-                document.getElementById(`lock-${n}`).innerText = "VERIFICATION PASSED";
+                document.getElementById(`lock-${n}`).innerText = "VERIFIED";
                 document.getElementById(`ui-${n}`).style.display = 'none';
                 document.getElementById(`data-${n}`).style.display = 'block';
                 document.getElementById(`next-${n}`).style.display = 'block';
             } else {
-                alert("SYSTEM ERROR: 驗證碼錯誤，請檢查實體模型");
+                alert("ERR: 驗證碼錯誤");
             }
         }
 
         function go(n) {
             document.getElementById(`stg-${n}`).classList.remove('active');
-            const next = document.getElementById(`stg-${n+1}`);
-            if (next) next.classList.add('active');
+            let nextN = n + 1;
+            if (nextN >= totalStages) return;
+            
+            document.getElementById(`stg-${nextN}`).classList.add('active');
+            if (nextN > currentMaxStage) currentMaxStage = nextN;
+            updateNav(nextN);
+        }
+
+        function jumpTo(n) {
+            if (n > currentMaxStage) return;
+            document.querySelectorAll('.stage').forEach(s => s.classList.remove('active'));
+            document.getElementById(`stg-${n}`).classList.add('active');
+            updateNav(n);
+        }
+
+        function updateNav(current = 0) {
+            document.getElementById('coord-display').innerText = `COORD: PHASE ${current.toString().padStart(2, '0')}`;
+            for (let i = 0; i < totalStages; i++) {
+                let dot = document.getElementById(`dot-${i}`);
+                dot.className = 'nav-dot';
+                if (i <= currentMaxStage) dot.classList.add('unlocked');
+                if (i === current) dot.classList.add('current');
+            }
         }
     </script>
 </body>
